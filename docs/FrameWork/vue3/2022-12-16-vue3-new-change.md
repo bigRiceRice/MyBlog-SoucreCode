@@ -100,18 +100,18 @@ tags:
     // 上面的引用 ({ count: 0 }) 将不再被追踪（响应性连接已丢失！）
     state = reactive({ count: 1 });
     // 同时这也意味着当我们将响应式对象的属性赋值或解构至本地变量时，或是将该属性传入一个函数时，我们会失去响应性：
-
+    
     // n 是一个局部变量，同 state.count
     // 失去响应性连接
     let n = state.count;
     // 不影响原始的 state
     n++;
-
+    
     // count 也和 state.count 失去了响应性连接
     let { count } = state;
     // 不会影响原始的 state
     count++;
-
+    
     // 该函数接收一个普通数字，并且
     // 将无法跟踪 state.count 的变化
     callSomeFunction(state.count);
@@ -129,21 +129,21 @@ tags:
 
         ```js
         const objectRef = ref({ count: 0 });
-
+        
         // 这是响应式的替换
         objectRef.value = { count: 1 };
-
+        
         // ref 被传递给函数或是从一般对象上被解构时，不会丢失响应性：
         const obj = {
             foo: ref(1),
             bar: ref(2),
         };
-
+        
         // 该函数接收一个 ref
         // 需要通过 .value 取值
         // 但它会保持响应性
         callSomeFunction(obj.foo);
-
+        
         // 仍然是响应式的
         const { foo, bar } = obj;
         ```
@@ -250,10 +250,10 @@ function increment() {
     ```html
     <script setup>
         import { ref } from "vue";
-
+    
         const a = 1;
         const b = ref(2);
-
+    
         defineExpose({
             a,
             b,
@@ -541,4 +541,4 @@ Vue3 的路由用法也与之前也有差别
 
 > 效果
 
-![01](https://gitee.com/superbigrice/upload-image-for_-typora/raw/master/Images/202212121656957.gif)
+![01](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301121343540.gif)
