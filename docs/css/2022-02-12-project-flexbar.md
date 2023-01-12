@@ -1,17 +1,17 @@
 ---
-title: Demo - 伸缩侧边栏
+title: 【Demo】伸缩侧边栏
 author: BigRice
 date: 2022-02-12
 location: 云梦泽
-summary: 一个由有着优美动效的`伸缩侧边栏`小项目
+summary: 一个有着优美动效的`伸缩侧边栏`小项目
 tags:
-    - Css
-    - Project
+  - Css
+  - Project
 ---
 
 伸缩侧边栏的案例，使用 `CSS` + `JavaScript`
 
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301062218115.gif" alt="伸缩侧边栏" style="zoom:80%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301062218115.gif" alt="伸缩侧边栏" style="zoom:80%" />
 
 ## 配色
 

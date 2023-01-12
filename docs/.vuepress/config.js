@@ -1,34 +1,48 @@
 module.exports = {
     theme: "@vuepress/theme-blog",
     title: "Big Rice 🍚",
+    base: "/bigRiceRice.io/dist/",
     themeConfig: {
         smoothScroll: true,
         dateFormat: "YYYY-MM-DD",
         directories: [
             {
-                id: "arrayMethods",
-                dirname: "arrayMethods",
-                title: "arrayMethods",
+                id: "javascript",
+                dirname: "JavaScript",
+                path: "/JavaScript/",
+                title: "JavaScript",
+            },
+            {
+                id: "framework",
+                dirname: "FrameWork",
+                path: "/FrameWork/",
+                title: "框架",
+            },
+            {
+                id: "api",
+                dirname: "API",
+                path: "/API/",
+                title: "Api",
             },
             {
                 id: "css",
-                dirname: "css",
-                title: "css",
-            },
-            {
-                id: "objectMethods",
-                dirname: "objectMethods",
-                title: "objectMethods",
+                dirname: "Css",
+                path: "/Css/",
+                title: "Css",
             },
         ],
         nav: [
             {
-                text: "Array",
-                link: "/arrayMethods/",
+                text: "框架",
+                link: "/FrameWork/",
             },
             {
                 text: "Css",
-                link: "/css/",
+                link: "/Css/",
+            },
+            {
+                text: "API",
+                link: "/API/",
             },
         ],
         footer: {
@@ -40,11 +54,18 @@ module.exports = {
             ],
             copyright: [
                 {
-                    text: "Big Rice © 2023",
+                    text: "该网站使用 vuepress + @vuepress/theme-blog 搭建 —— by: Big Rice © 2023",
                     link: "",
                 },
             ],
         },
     },
-    plugins: [["vuepress-plugin-code-copy", true]],
+    plugins: [
+        [
+            "@vuepress/search",
+            {
+                searchMaxSuggestions: 10,
+            },
+        ],
+    ],
 };

@@ -1,4 +1,4 @@
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301062157542.gif" alt="高斯模糊" style="zoom:80%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301062157542.gif" alt="高斯模糊" style="zoom:80%" />
 
 ##### CSS 样式
 
