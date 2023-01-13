@@ -63,7 +63,7 @@ JSX 中有许多规则，比如：
     -   但可以使用 `<></>` 这样诡异的语法糖 🙄
 -   注释的语法为 `{/* */}`
 
-## 组件
+## 两种组件定义
 
 在 React 中，一般有两种方式定义组件：
 
@@ -112,8 +112,6 @@ JSX 中有许多规则，比如：
 - Hook 完成代码复用方便
 - `this` 为 `undefinde`
 
-> 相对于类组件，函数组件更加的纯粹，简单，更利于测试，这是本质上的区别
-
 类组件
 
 - 根基是 OOP(面向对象编程)，所以它会有继承，有内部状态管理等
@@ -121,11 +119,13 @@ JSX 中有许多规则，比如：
 - 可以实现继承
 - HOC 高阶组件完成代码复用很麻烦
 
+> 相对于类组件，函数组件更加的纯粹，简单，更利于测试，这是本质上的区别
+
 #### 相同 
 
 组件是 React 可复用的最小代码片段，它们会返回要在页面中渲染 React 元素。
 
-也正是基于这一点，所以**在 React 中无论是函数组件，还是类组件，其实它们最终呈现的效果都是一致的，**如果你原因也可以把类组件重构成函数组件，反之也可以（虽然不推荐）。
+也正是基于这一点，所以**在 React 中无论是函数组件，还是类组件，其实它们最终呈现的效果都是一致的**，如果你原因也可以把类组件重构成函数组件，反之也可以（虽然不推荐）。
 
 #### 关于“状态同步问题”
 
@@ -161,11 +161,13 @@ JSX 中有许多规则，比如：
 
     <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131705340.gif" alt="demo" style="zoom:67%;" />
 
-通过上述操作，我们可以发现，不管是 props 还是自身的 state，函数式组件中弹出的值都是点击按钮那一刻的值（相同输入必定会有**相同的输出**），而类组件可以保持输入最新的值。
+通过上述操作，函数式组件中弹出的值都是点击按钮那一刻的值（印证了相同输入必定会有**相同的输出**），而类组件可以保持输入最新的值。
 
-首先不论是函数式组件还是类组件，只要状态或者 props 发生变化了那就会触发重新渲染，而且对于没有进行过性能优化（memo）的子组件来说，只要父组件重新渲染了，子组件就会跟着重新渲染。而且在 react 中 **props 是不可变的，而 `this` 是一直在改变的**。
+原因如下：
 
-所以类组件中的方法点击时可以获取到最新的实例（即 `this`），而函数组件在渲染的时候由于**闭包**的特性捕获了渲染时的值，所以例子会出现这种现象。
+当我们更新状态的时候, React 会重新渲染组件, 每一次渲染都会拿到独立的 `user` 状态,  并重新渲染一个  `handleClick`  函数.  每一个 `handleAlertClick` 里面都有它自己的 `user` 。这就是为什么函数组件会出现这种情况。
+
+但是在类组件中， `this` 是一直在改变的，所以类组件中的方法点击时可以获取到最新的实例（即 `this`）进而显示出最新的值了。
 
 > 那么有没有一种方式解决呢？
 >
@@ -187,9 +189,114 @@ JSX 中有许多规则，比如：
 
 ### Context 传参
 
-更多时候，通过 `<Son />` 将参数传递到最下的组件这种方式太过繁琐.
+更多时候，通过 `<Son />`  这个中间组件将参数传递到最底部的组件这种方式太过繁琐（可能中间组件并不需要 props）这个时候我们可以使用 `context API` 来解决这个问题。
 
-我们可以使用 `createContext` 来解决，创建一个上下文空间，被这个上下文空间包裹的所有组件都可以共享数据：
+#### API
+
+React 提供了一套 `Context API` 一种在组件之间共享值的方式，不必显式地通过组件树的逐层传递 props。
+
+
+
+##### [*React.createContext*](https://react.docschina.org/docs/context.html#reactcreatecontext)
+
+```js
+const MyContext = React.createContext(defaultValue);
+```
+
+创建一个 Context 上下文对象。
+
+**只有**当组件所处的树中没有匹配到 Provider 时，其 `defaultValue` 参数才会生效。
+
+此默认值有助于在不使用 Provider 包装组件的情况下对组件进行测试。
+
+> 注意：将 `undefined` 传递给 Provider 的 value 时，消费组件的 `defaultValue` 不会生效。
+
+
+
+##### [*Context.Provider*](https://react.docschina.org/docs/context.html#contextprovider)
+
+```jsx
+<MyContext.Provider value={/* 某个值 */}>
+```
+
+每个 `React.createContext` 创建出来的 *Context* 对象都会返回一个 *Context.Provider* 组件，它将作为数据提供组件。
+
+Provider 接收一个 `value` 属性，传递给消费组件。一个 Provider 可以和多个消费组件有对应关系。多个 Provider 也可以嵌套使用，里层的会覆盖外层的数据。
+
+
+
+##### [*Context.Consumer*](https://react.docschina.org/docs/context.html#contextconsumer)
+
+```jsx
+<MyContext.Consumer>
+  {value => /* 基于 context 值进行渲染*/}
+</MyContext.Consumer>
+```
+
+Consumer 消费者组件可以使函数组件获取到 Context 上下文提供的数据。
+
+这种方法需要一个[函数作为子元素（function as a child）](https://react.docschina.org/docs/render-props.html#using-props-other-than-render)。这个函数接收当前的 Context 上下文对象，并要求返回一个 React 节点。
+
+函数的 `value` 将为最近的 Provider 提供的 `value` （因为可能有嵌套可能）。如果没有 Provider，`value` 等同于传递给 `createContext()` 的 `defaultValue`。
+
+> 在函数式组件中更加推荐使用 `useContext hook`  来获取 Context 上下文对象
+
+
+
+##### [*Class.contextType*](https://react.docschina.org/docs/context.html#classcontexttype)
+
+ContextType 可以使类组件获取到 Context 上下文提供的数据。
+
+```js
+class MyClass extends React.Component {
+    state = {
+		context : null
+    }
+    componentDidMount() {
+        this.setState({ coutext : this.context })
+        /* 在组件挂载完成后，使用 MyContext 组件的值来执行一些有副作用的操作 */
+    }
+}
+MyClass.contextType = MyContext;
+```
+
+当将类组件的 `contextType` 赋值为 `Context` 上下文对象后，就可以在类组件中访问 `this.context` 了。
+
+> 也可以使用  [public class fields 语法](https://babeljs.io/docs/plugins/transform-class-properties/) 赋值 `contextType`
+>
+> ```jsx
+> class MyClass extends React.Component {
+>   static contextType = MyContext;
+>   render() {
+>     let value = this.context;
+>     /* 基于这个值进行渲染工作 */
+>   }
+> }
+> ```
+
+
+
+##### [*Context.displayName*](https://react.docschina.org/docs/context.html#contextdisplayname)
+
+context 对象接受一个名为 `displayName` 的 property，类型为字符串。React DevTools 使用该字符串来确定 context 要显示的内容。
+
+示例，下述组件在 DevTools 中将显示为 MyDisplayName：
+
+```jsx
+const MyContext = React.createContext(/* some value */);
+MyContext.displayName = 'MyDisplayName';
+
+<MyContext.Provider> // "MyDisplayName.Provider" 在 DevTools 中
+<MyContext.Consumer> // "MyDisplayName.Consumer" 在 DevTools 中
+```
+
+
+
+#### 使用
+
+使用 `React.createContext` 创建一个 `context` 上下文空间。
+
+被 `context.Provider` 包裹的所有组件都将可以访问 `context` 上下文空间：
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032136483.png" alt="code" style="zoom: 50%;" />
 
@@ -197,9 +304,9 @@ JSX 中有许多规则，比如：
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032134843.png" alt="code" style="zoom: 50%;" />
 
-值得注意的是，`<Context.Consumer>` 中内容**必须**是一个返回 JSX 元素的函数。
+值得注意的是，`Context.Consumer` 中内容**必须**是一个返回 JSX 元素的函数。
 
-但是使用这样的方式来传参会显得代码杂乱，我们可以使用 `useContext` **_Hook_** 来使用消费者！
+但是使用这样的方式来传参会显得代码冗余，我们可以使用 `useContext Hook` 来获取 Context 对象！
 
 就像这样：
 
@@ -209,25 +316,41 @@ JSX 中有许多规则，比如：
 
 在 React 中，数据都定义在 `state` 状态中，可以将它看成 Vue 的 `data`，只有定义在 `state` 中的数据被修改才能触发视图更新！
 
-#### 如何定义
+### Class State
 
-类组件这样定义：
+类组件可直接初始化 `state`，或在 `constructor` 中初始化 `state` 
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032140241.png" alt="code" style="zoom: 50%;" />
 
-函数组件使用 `useState` **_Hook_** 定义：
-
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032142128.png" alt="code" style="zoom: 50%;" />
-
-当 State 中的数据需要修改时，直接修改它是不会触发视图更新的，需要调用 `ustState` 返回的数组中的第二个元素，即以 `set` 开头的函数来修改数据。
-
-下面是一个点击累加的例子：
-
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032143017.png" alt="code" style="zoom:50%;" />
-
-使用类组件复刻它：
+类组件使用实例上的 `setState` 更新状态
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032144928.png" alt="code" style="zoom: 50%;" />
+
+#### 关于 *setState*
+
+语法：
+
+```js
+setState(updater, [callback])
+
+updater = callback((lastState, props) => state | state)
+```
+
+- `updater` ：**必需**
+    - 可以传入一个新的 `state` 对象**合并**旧的 state 对象，若旧的不存在，则创建。
+    - 可以传入一个回调函数，此回调函数的参数是将为最新的 state 和最新的 props，**必须**返回一个新的 state
+- `endCallback`：可选，将在 `setState` 完成合并并重新渲染组件后执行。
+    - 通常，建议使用 `componentDidUpdate()` 来代替此方式。
+
+`setState()` 将对组件 state 的更改排入队列，并通知 React 需要使用更新后的 state 重新渲染此组件及其子组件。这是用于更新用户界面以响应事件处理器和处理服务器数据的主要方式。
+
+> 注意：
+
+`setState()` 并不总是立即更新组件。它会批量推迟更新。这使得在调用 `setState()` 后立即读取 `this.state` 成为了隐患。、
+
+为了消除隐患，请使用 `componentDidUpdate` 或者 `setState` 的回调函数（`setState(updater, callback)`），这两种方式都可以保证在应用更新后触发。如需基于之前的 state 来设置当前的 state，可以为 `updater`  传入一个回调函数。
+
+
 
 #### 正确地使用 State
 
@@ -251,13 +374,13 @@ JSX 中有许多规则，比如：
 
 例如，此代码可能会无法更新计数器：
 
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032146262.png" alt="code" style="zoom: 67%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032146262.png" alt="code" style="zoom: 50%;" />
 
 要解决这个问题，可以让 `setState()` 接收一个函数而不是一个对象。
 
 这个函数用上一个 state 作为第一个参数，将此次更新被应用时的 props 做为第二个参数：
 
-![code](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032148676.png)
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032148676.png" alt="code" style="zoom:50%;" />
 
 ##### State 的更新会被合并
 
@@ -269,11 +392,97 @@ JSX 中有许多规则，比如：
 
 然后你可以分别调用 `setState()` 来单独地更新它们：
 
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032149974.png" alt="code" style="zoom:67%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032149974.png" alt="code" style="zoom: 50%;" />
 
 这里的合并是浅合并，所以 `this.setState({comments})` 完整保留了 `this.state.posts`， 但是完全替换了 `this.state.comments`。
 
 > 值得注意的是函数组件中的 useState 将是**替换**操作，而不是合并 
+
+
+
+### Function State
+
+函数组件定义 `state` 只能通过 `useState` *Hook* 来实现，语法如下：
+
+```js
+const [state, setState] = useState(initialState);
+```
+
+- `initialState`：**必需**，设置初始值
+- `state`：初始值的状态引用
+- `setState`：更新状态的函数
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032142128.png" alt="code" style="zoom: 50%;" />
+
+当 State 中的数据需要修改时，直接修改它是不会触发视图更新的，需要调用 `ustState` 返回的数组中的第二个元素，即以 `set` 开头的函数来修改数据。
+
+下面是一个点击累加的例子：
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032143017.png" alt="code" style="zoom:50%;" />
+
+#### 关于 *setState*
+
+语法：
+
+```js
+setState(updater)
+updater = callback(lastState => state | state )
+```
+
+如果新的 state 需要通过使用先前的 state 计算得出，那么可以将函数传递给 `setState`。该函数将接收先前的 state，并返回一个更新后的值。
+
+> 🔴注意：
+>
+> 与类组件中的 `setState` 方法不同，`useState` *Hook* 的 `setState` 的行为将是直接替换原状态，且**在新旧状态引用地址不变的情况下**，将不会触发模板更新！！
+>
+> 你可以用函数式的 `setState` 结合展开运算符来达到合并更新对象的效果。
+>
+> ```js
+> const [state, setState] = useState({});
+> setState(prevState => {
+>     // 也可以使用 Object.assign
+> 	// 必须更新原状态的引用地址，不然将不会触发模板更新！！！
+>     return {...prevState, ...updatedValues};
+> });
+> ```
+
+
+
+#### 关于 *initialState*
+
+*initialState* 用于初始化一个 state 状态，但一定不要写成这样的形式：
+
+```js
+// 假设我们的 state 需要经过大量的计算
+function clacState (){
+    return 1 + 2 + 10086;
+}
+const [state, setState] = useState( clacState() ); // 🔴
+
+class State {
+    data:{/*...*/}
+}
+const [state, setState] = useState( new State() ); // 🔴
+```
+
+不要直接在 *initialState* 中直接调用函数或调用一个类的初始化函数，这将影响性能且可能会造成为止的 BUG，因为每次组件重新渲染都会重新调用。
+
+而且 *initialState* 是可以惰性初始化的。上述代码应该修改成如下：
+
+```js
+// 假设我们的 state 需要经过大量的计算
+function clacState (){
+    return 1 + 2 + 10086;
+}
+const [state, setState] = useState( clacState ); // 🟢
+
+class State {
+    data:{/*...*/}
+}
+const [state, setState] = useState( new State ); // 🔴
+```
+
+
 
 ## Props
 
@@ -288,6 +497,257 @@ JSX 中有许多规则，比如：
 React 非常灵活，但它也有一个严格的规则，即：
 
 **所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。**
+
+
+
+## Refs
+
+Refs 为 *Reference(引用)*  的缩写，它提供了一种方式，允许我们访问 DOM 节点或在 render 方法中创建的 React 元素。
+
+### 类组件 createRef
+
+类组件的 Refs 是使用 `React.createRef()` 创建的，并通过 `ref` 属性附加到 React 元素。在构造组件时，通常将 Refs 分配给实例属性，以便可以在整个组件中引用它们。
+
+```js
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.myRef = React.createRef();
+  }
+  render() {
+    return <div ref={this.myRef} />;
+  }
+}
+```
+
+React 会在组件挂载时给 `current` 属性传入 DOM 元素，并在组件卸载时传入 `null` 值。
+
+`ref` 会在 `componentDidMount` 或 `componentDidUpdate` 生命周期钩子触发前就更新。
+
+#### 访问 Refs
+
+当 ref 被传递给 `render` 中的元素时，对该节点的引用可以在 ref 的 `current` 属性中被访问。
+
+```js
+const node = this.myRef.current;
+```
+
+ref 的值根据节点的类型而有所不同：
+
+- 当 `ref` 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 `ref` 接收底层 DOM 元素作为其 `current` 属性。
+- 当 `ref` 属性用于自定义 class 组件时，`ref` 对象接收组件的挂载实例作为其 `current` 属性。
+- **你不能在函数组件上使用 `ref` 属性**，因为他们没有实例。
+
+以下例子说明了这些差异。
+
+
+
+#### 为 DOM 元素添加 Ref
+
+以下代码使用 `ref` 去存储 DOM 节点的引用：
+
+```jsx
+class CustomTextInput extends React.Component {
+    // 创建一个 ref 来存储 textInput 的 DOM 元素
+    textInput = React.createRef();
+
+    focusTextInput = () => {
+        // 直接使用原生 API 使 text 输入框获得焦点
+        // 注意：我们通过 "current" 来访问 DOM 节点
+        this.textInput.current.focus();
+    }
+
+    render() {
+        // 构造器里创建的 `textInput` 上
+        return (
+            <div>
+                <input
+                    ref={this.textInput} // 告诉 React 我们想把 <input> ref 关联到 textInput
+                    type="text" />
+                <input
+                    type="button"
+                    value="Focus the text input"
+                    onClick={this.focusTextInput}
+                    />
+            </div>
+        );
+    }
+}
+```
+
+#### 为类组件添加 Ref
+
+如果我们想包装上面的 `CustomTextInput`，来模拟它挂载之后立即被点击的操作，我们可以使用 ref 来获取这个自定义的 input 组件并手动调用它的 `focusTextInput` 方法：
+
+```jsx
+class AutoFocusTextInput extends React.Component {
+    textInput = React.createRef();
+    componentDidMount() {
+        this.textInput.current.focusTextInput();
+    }
+
+    render() {
+        return (
+            <CustomTextInput ref={this.textInput} />
+        );
+    }
+}
+```
+
+请注意，这仅在 `CustomTextInput` 声明为 class 时才有效：
+
+```jsx
+class CustomTextInput extends React.Component {
+  // ...
+}
+```
+
+
+
+#### Refs 与函数组件
+
+默认情况下，**你不能在函数组件上使用 `ref` 属性**，因为它们没有实例：
+
+```jsx
+function MyFunctionComponent() {
+    return <input />;
+}
+
+class Parent extends React.Component {
+    constructor(props) {
+        super(props);
+        this.textInput = React.createRef();
+    }
+    render() {
+        // 这将不会工作
+        return (
+            <MyFunctionComponent ref={this.textInput} />
+        );
+    }
+}
+```
+
+如果要在函数组件中使用 `ref`，你可以使用 [forwardRef](https://zh-hans.reactjs.org/docs/forwarding-refs.html)（可与 [`useImperativeHandle`](https://zh-hans.reactjs.org/docs/hooks-reference.html#useimperativehandle) 结合使用），或者可以将该组件转化为 class 组件。
+
+
+
+### 函数组件 useRef
+
+函数组件使用 `useRef` 创建引用，它的用法与 `createRef` 一致：
+
+```jsx
+// 用法与 `createRef` 一致
+const FunctionComponent = props => {
+    const textInput = useRef();
+    function focusTextInput() {
+        textInput.current.focus();
+    }
+    return (
+        <div>
+            <input
+                ref={textInput} // 告诉 React 我们想把 <input> ref 关联到 textInput
+                type="text"
+            />
+            <input type="button" value="Focus the text input" onClick={focusTextInput} />
+        </div>
+    );
+};
+```
+
+
+
+#### 为什么是 useRef ？
+
+我们可能会纳闷，`createRef` 与 `useRef` 用法都一样，那 `useRef` 这个后生的意义何在？其实这个问题的答案在官网上就能找到。
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301132318159.png" alt="image-20230113231844076" style="zoom: 67%;" />
+
+换句人话说 ,  `useRef` 在 react hook 中的作用正如官网说的，它像一个变量，类似于 this 、 它像一个盒子, 你可以存放任何东西。敲重点，`useRef `  并**不局限在引用 DOM 节点上**！
+
+它与 `createRef` 的本质区别在于：`useRef` 的引用**不会随着组件的更新而更新**
+
+> createRef 每次渲染都会返回一个新的引用，而 useRef 每次都会返回相同的引用，除非显示的修改它的 current。
+
+#### **总结**
+
+- useRef 不仅仅是用来管理 DOM ref 的，它还相当于 this , 可以存放任何变量.  
+- useRef 可以很好的解决闭包带来的不方便性. 你可以在各种库中看到它的身影,   比如 react-use 中的 useInterval , usePrevious …… 
+- 值得注意的是，当 useRef 的内容发生变化时,它不会通知您。更改 .current 属性不会导致重新渲染
+
+
+
+### 通用的 Ref Callback
+
+> Ref Callback 是一种通用的创建引用方式，类组件与函数式组件都可使用
+
+React 支持另一种设置 refs 的方式，称为“回调 refs”。它能助你更精细地控制何时 refs 被设置和解除。
+
+不同于传递 `createRef()` 创建的 `ref` 属性，你会传递一个函数。这个函数中接受 React 组件实例或 HTML DOM 元素作为参数，以使它们能在其他地方被存储和访问。
+
+下面的例子描述了一个通用的范例：使用 `ref` 回调函数，在实例的属性中存储对 DOM 节点的引用。
+
+```jsx
+class CustomTextInput extends React.Component {
+    textInput = null
+    
+    setTextInputRef = element => {
+        this.textInput = element;
+    };
+    
+    focusTextInput = () => {
+        // 使用原生 DOM API 使 text 输入框获得焦点
+        if (this.textInput) this.textInput.focus();
+    };
+    
+    componentDidMount() {
+        // 组件挂载后，让文本框自动获得焦点
+        this.focusTextInput();
+    }
+
+    render() {
+        // 使用 `ref` 的回调函数将 text 输入框 DOM 节点的引用存储到 React
+        return (
+            <div>
+                <input
+                    type="text"
+                    ref={this.setTextInputRef}
+                    />
+                <input
+                    type="button"
+                    value="Focus the text input"
+                    onClick={this.focusTextInput}
+                    />
+            </div>
+        );
+    }
+}
+```
+
+这在组件上也同样适用：
+
+```jsx
+function CustomTextInput(props) {
+    return (
+        <div>
+            <input ref={props.inputRef} />
+        </div>
+    );
+}
+
+class Parent extends React.Component {
+    render() {
+        return (
+            <CustomTextInput
+                inputRef={el => this.inputElement = el}
+            />
+        );
+    }
+}
+```
+
+
+
+
 
 ## 插槽
 
