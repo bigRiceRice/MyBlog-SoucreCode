@@ -20,7 +20,7 @@ tags:
     <template>
         <Child v-model="number"></Child>
     </template>
-
+    
     <script>
     export default {
         data() {
@@ -104,11 +104,9 @@ v-leave-to {
 }
 ```
 
-```
 1. `v-enter-active,v-leave-active`：显示/隐藏 过渡整体的曲线或动画
 2. `v-enter,v-leave-to` ：显示过渡一开始时的样式，与隐藏过渡结束时的样式
-    1. 不定义 `v-enter-to` 的原因是过渡完后元素将会恢复到定义之初时的样式，所以完全不需要在最后一点时间存在动画，
-```
+    - 不定义 `v-enter-to` 的原因是过渡完后元素将会恢复到定义之初时的样式，所以完全不需要在最后一点时间存在动画，
 
 需要定义 `animation` 动画效果时，只需要在 `v-enter-active(进入过渡时)` 与 `v-leave-active(离开过渡时)` 两个样式上开启动画
 
@@ -204,7 +202,7 @@ methods: {
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301091207781.gif" alt="toggle" style="zoom:80%" />
 
--   在“Toggel”按钮和“Togge2”按钮的过渡中，两个按钮都被重绘了，一个离开过渡的时候另一个开始进入过渡。这是 `<transition>` 的默认行为 - `进入和离开同时发生`。
+-   在“Toggel”按钮和“Togge2”按钮的过渡中，两个按钮都被重绘了，一个离开过渡的时候另一个开始进入过渡。这是 `<transition>` 的默认行为 - **进入和离开同时发生**。
 
 -   通常遇到这种情况我们可以使用**绝对定位**来消除这种影响
 
@@ -221,7 +219,7 @@ methods: {
 -   `in-out`：新元素先进行过渡，完成之后当前元素过渡离开。
 -   `out-in`：当前元素先进行过渡，完成之后新元素过渡进入。
 
-##### 用 `out-in` 重写之前的开关按钮过渡：
+##### 用 *out-in* 重写之前的开关按钮过渡：
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301091207547.gif" alt="${1}" style="zoom:80%" />
 

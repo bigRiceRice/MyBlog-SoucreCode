@@ -8,20 +8,96 @@ tags:
   - React
 ---
 
-### 🌠 什么是 Hooks - 钩子
+## 🌠 什么是 Hooks 
 
-Hook 是一些可以让你在函数组件里“钩入” React state 及生命周期等特性的函数。
-
-Hook 其实就是 JavaScript 函数，但是使用它们会有两个额外的规则：
-
-- 只能在**函数最外层**调用 Hook。不要在循环、条件判断或者子函数中调用。
-- 只能在 **React 的函数组件**中调用 Hook。不要在其他普通 JavaScript 函数中调用。
+*Hook* 是 React 16.8 的新增特性。它可以让你在不编写 class 的情况下使用 state 以及其他的 React 特性。
 
 下面就让我们来了解 React 那些常用的 Hook 吧！
 
+比如 `useState` 就是一个 *Hook*
+
+```jsx
+import React, { useState } from 'react';
+
+function Example() {
+  // 声明一个新的叫做 “count” 的 state 变量
+  const [count, setCount] = useState(0);
+
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}
+```
+
+*Hook* 其实就是 JavaScript 函数，但是使用它们会有两个额外的规则：
+
+- 只能在**函数最外层**调用 Hook。不能在循环、条件判断或者子函数中调用。
+- 只能在 **React 的函数组件**中调用 Hook。不能在其他普通 JavaScript 函数中调用。
+
+在我们继续之前，请记住 Hook 是：
+
+- **完全可选的。** 你无需重写任何已有代码就可以在一些组件中尝试 Hook。但是如果你不想，你不必现在就去学习或使用 Hook。
+- **100% 向后兼容的。** Hook 不包含任何破坏性改动。
+- **现在可用。** Hook 已发布于 v16.8.0。
+
+**没有计划从 React 中移除 class。** 
+
+**Hook 不会影响你对 React 概念的理解。** 恰恰相反，Hook 为已知的 React 概念提供了更直接的 API：props， state，context，refs 以及生命周期。稍后我们将看到，Hook 还提供了一种更强大的方式来组合他们。
+
+## 为什么需要 *Hook* ？
+
+Hook 解决了我们五年来编写和维护成千上万的组件时遇到的各种各样看起来不相关的问题。无论你正在学习 React，或每天使用，或者更愿尝试另一个和 React 有相似组件模型的框架，你都可能对这些问题似曾相识。
+
+### 一、想要复用一个有状态的组件太麻烦了！
+
+我们都知道 react 的核心思想就是，**将一个页面拆成一堆独立的，可复用的组件**，并且用自上而下的单向数据流的形式将这些组件串联起来。
+
+但假如你在大型的工作项目中用 react，你会发现你的项目中实际上很多 react 组件冗长且难以复用。尤其是那些写成class的组件，它们本身包含了状态（state），所以复用这类组件就变得很麻烦。
+
+那之前，官方推荐怎么解决这个问题呢？答案是：[渲染属性（Render Props）](https://link.juejin.cn/?target=https%3A%2F%2Freactjs.org%2Fdocs%2Frender-props.html)和[高阶组件（Higher-Order Components）](https://link.juejin.cn/?target=https%3A%2F%2Freactjs.org%2Fdocs%2Fhigher-order-components.html)。
+
+但是这类方案需要重新组织你的组件结构，这可能会很麻烦，使你的代码难以理解。
+
+如果你在 React DevTools 中观察过 React 应用，你会发现由 providers，consumers，高阶组件，render props 等其他抽象层组成的组件会形成“**嵌套地狱**“：
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301151749461.webp" style="zoom:67%;" />
+
+尽管我们可以[在 DevTools 过滤掉它们](https://github.com/facebook/react-devtools/pull/503)，但这说明了一个更深层次的问题：**React 需要为共享状态逻辑提供更好的原生途径**。
+
+但你可以使用 Hook 从组件中提取状态逻辑，使得这些逻辑可以单独测试并复用。**Hook 使你在无需修改组件结构的情况下复用状态逻辑。** 这使得在组件间或社区内共享 Hook 变得更便捷。
+
+### 二、生命周期钩子函数里的逻辑太乱了吧！
+
+我们通常希望一个函数只做一件事情，但我们的生命周期钩子函数里通常同时做了很多事情。
+
+比如我们需要在 `componentDidMount` 中发起 ajax 请求获取数据，绑定一些事件监听等等。同时，有时候我们还需要在`componentDidUpdate` 做一遍同样的事情。当项目变复杂后，书写这种重复的代码是很浪费时间的。
+
+为了解决这个问题，**Hook 将组件中相互关联的部分拆分成更小的函数（比如设置订阅或请求数据）**，而并非强制按照生命周期划分。你还可以使用 reducer 来管理组件的内部状态，使其更加可预测。
+
+### 三、class 真的太让人困惑了！
+
+除了代码复用和代码管理会遇到困难外，class 是学习 React 的一大屏障。你必须去理解 JavaScript 中 `this` 的工作方式，这与其他语言存在巨大差异。
+
+而且你还不能忘记绑定事件处理器。如果不使用 [ES2022 public class fields](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/Public_class_fields#public_instance_fields)，这些代码非常冗余。大家可以很好地理解 props，state 和自顶向下的数据流，但对 class 却一筹莫展。
+
+即便在有经验的 React 开发者之间，对于函数组件与 class 组件的差异也存在分歧，甚至还要区分两种组件的使用场景。
 
 
-### useState
+
+为了解决以上这些问题，**Hook 使你在非 class 的情况下可以使用更多的 React 特性。** 
+
+从概念上讲，React 组件一直更像是函数。而 Hook 则拥抱了函数，同时也没有牺牲 React 的精神原则。Hook 提供了问题的解决方案，无需学习复杂的函数式或响应式编程技术。
+
+
+
+## 一些常用的 *Hook*
+
+### 🍧 *useState*
 
 > `useState` 的用法与 Vue3 的 `ref` 函数类似，不过它的返回值是一个数组，其中包含**当前**状态和一个让你更新它的函数。
 
@@ -97,9 +173,102 @@ const [state, setState] = useState( new State ); // 🔴
 
 
 
-### useEffect 
+### 🍗 *useReducer*
 
-*Effect Hook* 可以让你在函数组件中执行副作用操作：
+```js
+const [state, dispatch] = useReducer(reducer, initialArg, init);
+```
+
+- `reducer`：**必需**，状态的规则
+- `initialArg`：**必需**，状态的初始值
+- `init`：可选，状态的惰性初始化函数
+- `state`：最新的状态
+- `dispatch`：调用规则的函数，语法为 `dispatch({type: 'xxx'})}`
+
+`useReducer` 为 [`useState`](https://zh-hans.reactjs.org/docs/hooks-reference.html#usestate) 的替代方案。它接收一个形如 `(state, action) => newState` 的 reducer，并返回当前的 state 以及与其配套的 `dispatch` 方法。（如果你熟悉 Redux 的话，就已经知道它如何工作了。）
+
+在某些场景下，`useReducer` 会比 `useState` 更适用，例如 state 逻辑较复杂且包含多个子值，或者下一个 state 依赖于之前的 state 等。
+
+并且，使用 `useReducer` 还能给那些会触发深更新的组件做性能优化，因为[你可以仅向子组件传递一个 `dispatch` 而不是多个回调函数](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down) 。
+
+以下为一个计数器例子：
+
+```jsx
+const initialState = {count: 0};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    default:
+      throw new Error();
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(reducer, initialState);
+  return (
+    <>
+      Count: {state.count}
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+```
+
+#### 惰性初始化
+
+你可以选择惰性地创建初始 state。为此，需要将 `init` 函数作为 `useReducer` 的第三个参数传入，这样初始 state 将被设置为 `init(initialArg)`。
+
+这么做可以将用于计算 state 的逻辑提取到 reducer 外部，这也为将来对重置 state 的 action 做处理提供了便利：
+
+```jsx
+function init(initialCount) {
+  return {count: initialCount};
+}
+
+function reducer(state, action) {
+  switch (action.type) {
+    case 'increment':
+      return {count: state.count + 1};
+    case 'decrement':
+      return {count: state.count - 1};
+    case 'reset':
+      return init(action.payload);
+    default:
+      throw new Error();
+  }
+}
+
+function Counter({initialCount}) {
+  const [state, dispatch] = useReducer(reducer, initialCount, init);
+  return (
+    <>
+      Count: {state.count}
+      <button
+        onClick={() => dispatch({type: 'reset', payload: initialCount})}>
+        Reset
+      </button>
+      <button onClick={() => dispatch({type: 'decrement'})}>-</button>
+      <button onClick={() => dispatch({type: 'increment'})}>+</button>
+    </>
+  );
+}
+
+```
+
+
+
+### 🍤 *useEffect* 
+
+你之前可能已经在 React 组件中执行过数据获取、订阅或者手动修改过 DOM。我们统一把这些操作称为“副作用”，或者简称为“作用”。
+
+`useEffect` 就是一个 Effect Hook，给函数组件增加了操作副作用的能力。它跟 class 组件中的 `componentDidMount`、`componentDidUpdate` 和 `componentWillUnmount` 具有相同的用途（注意：某些行为并不完全相同），只不过被合并成了一个 API。
+
+例如，下面这个组件在 React 更新 DOM 后会设置一个页面标题：
 
 ```jsx
 import React, { useState, useEffect } from 'react';
@@ -113,22 +282,52 @@ function Example() {
 }
 ```
 
-由于 `useEffect` 中极其生草的回调调用，可以把 `useEffect` Hook 看做 `componentDidMount 挂载前` ，`componentDidUpdate 更新前` 和 `componentWillUnmount 卸载阶段` 这三个函数的组合，并且它从某种角度上还能做到类似 Vue 中 `watch` 的功能。
+#### *useEffect* 解绑副作用
+
+这种场景很常见，当我们在 `componentDidMount` 里添加了一个事件监听或定时器，我们应该在 `componentWillUnmount` 中，也就是组件被注销之前清除掉我们添加的事件监听或定时器，否则内存泄漏的问题就出现了。
+
+那么应该如何解绑呢？
+
+只需要在 `useEffect` 中返回一个新的函数即可：
 
 ```jsx
-const [message] = useState('哈哈哈')
 useEffect(() => {
-    // 这里的代码挂载前与更新前都会调用
     return ()=>{
-        // 返回一个函数，函数中的内容将在卸载阶段时调用
+        // 返回一个函数，将在重新渲染前调用
     }
-},[message]); // 只有代码挂载前与 message 产生更新时才会调用 useEffect
-// 如果想执行只运行一次的 effect（仅在组件挂载和卸载时执行），可以传递一个空数组（[]）作为第二个参数。
+}
 ```
 
+这里有一个点**需要重视**，`useEffect` 中返回的函数 **不！等！于！** `componentWillUnmount`。
+
+- `componentWillUnmount` 只会在组件**被销毁前执行一次**（狭义上的组件死了— 真正卸载）。
+- `useEffect` 中返回的函数是在组件**重新渲染前执行**的（广义上的组件死了 — 重新渲染）。
+
+#### 怎么跳过一些不必要的副作用函数
+
+假如每次重新渲染都要执行一遍这些副作用函数，显然是不经济且浪费性能的。怎么跳过一些不必要的计算呢？
+
+我们只需要给 useEffect 传第二个依赖项参数即可。
+
+- 若传值，必须为数组形式或空数组。
+
+用第二个参数来告诉 react 只有当这个依赖项参数的值发生改变时，才执行我们传的副作用函数（第一个参数）。
+
+```jsx
+useEffect(() => {
+  document.title = `You clicked ${count} times`;
+}, [count]); // 只有当count的值发生变化时，才会重新执行`document.title`这一条代码
+```
+
+当我们第二个参数传一个空数组 `[]` 时，其实就相当于只在首次渲染（`componentDidMount`）的时候执行。
+
+> 不过这种用法可能带来 `bug`
+>
+> 详情可以参考 [在依赖列表中省略参数是否安全？](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies)
 
 
-##### 使用多个 Effect 实现关注点分离
+
+#### 使用多个 Effect 实现关注点分离
 
 使用 Hook 其中一个[目的](https://zh-hans.reactjs.org/docs/hooks-intro.html#complex-components-become-hard-to-understand)就是要解决 class 中生命周期函数经常包含不相关的逻辑，但又把相关逻辑分离到了几个不同方法中的问题。可是 `useEffect` 所运行的方式实在是多样，所以我们可以多次调用 `useEffect` ，这会将不相关逻辑分离到不同的 effect 中：
 
@@ -137,7 +336,7 @@ useEffect(() => {
     // 这个 effect 只在每次挂载前都执行
 },[]); 
 useEffect(() => ()=>{
-    // 这个 effect 只在卸载阶段执行
+    // 这个 effect 只在重新渲染前执行
 }); 
 useEffect(() => {
     // 这个 effect 充当 watchEffect(vue)
@@ -146,11 +345,11 @@ useEffect(() => {
 
 
 
-### useContext
+### 🥗 *useContext*
 
-顶级组件可以使用 `createContext` 创建一个全局上下文对象，然后使用 `<Context.Provider>` 包裹的所有子组件都可以共享数据。
+接收一个 context 对象（`React.createContext` 的返回值）并返回该 context 的当前值。当前的 context 值由上层组件中距离当前组件最近的 `<MyContext.Provider>` 的 `value` prop 决定。
 
-那么子组件想要获取数据可以通过在 `<Context.Consumer>` 标签中返回函数来访问数据，也可以使用 `useContext` 快速结构数据！
+我们都知道 `MyContext.Provider` 用于提供数据，而 `MyContext.Consumer` 用于获取数据，那么 `useContext` 其实就是专门给无状态组件用于获取 `MyContext` 数据的 API。
 
 首先顶级组件一定要将 `createContext` 返回的对象暴露给需要使用数据的子组件，然后将 `Context` 传递给 `useContext` ：
 
@@ -159,9 +358,23 @@ import { Context } from "./App";
 const { name,setName } = useContext(Context);
 ```
 
- 
+####  注意：
 
-### useMemo
+别忘记 `useContext` 的参数必须是 *context 对象本身*：
+
+- **正确：** `useContext(MyContext)`
+- **错误：** `useContext(MyContext.Consumer)`
+- **错误：** `useContext(MyContext.Provider)`
+
+如果你在接触 Hook 前已经对 context API 比较熟悉，那应该可以理解，`useContext(MyContext)` 其实相当于 class 组件中的 `static contextType = MyContext` 或者 `<MyContext.Consumer>`。
+
+`useContext(MyContext)` 只是让你能够*读取* context 的值以及订阅 context 的变化。
+
+**你仍然需要在上层组件树中使用** `<MyContext.Provider>` 来为下层组件*提供* context，这一步是不可或缺的。
+
+
+
+### 🍔 useMemo
 
 > `useMemo` 是一个性能优化钩子，它可以缓存一个任意值，并指定依赖，只有当依赖变了，值才会重新获取。
 
@@ -203,7 +416,7 @@ const { name,setName } = useContext(Context);
 
 
 
-### React.memo
+#### React.memo
 
 > React.memo 是一个性能优化钩子，它的用法与 useMemo 差不多，不过 memo 时组件层面的缓存组件，也被成为纯组件。
 
@@ -256,7 +469,7 @@ const { name,setName } = useContext(Context);
 
 
 
-### useCallback
+### 🌯 useCallback
 
 > useCallback 是一个性能优化钩子，它可以缓存一个函数，并指定依赖，只有当依赖变更时，才会重新定义函数。
 
@@ -278,3 +491,84 @@ const { name,setName } = useContext(Context);
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301022300680.png" alt="code" style="zoom:50%;" />
 
+### 🥟 *useRef*
+
+`useRef` 返回一个可变的 ref 对象，其 `.current` 属性被初始化为传入的参数（`initialValue`）。返回的 ref 对象在组件的整个生命周期内持续存在。
+
+一个常见的用例便是将组件或元素的 `ref` 定义为 `useRef` 返回的 `Ref` 对象：
+
+```jsx
+function TextInputWithFocusButton() {
+    const inputEl = useRef(null);
+    const onButtonClick = () => {
+        // `current` 指向已挂载到 DOM 上的文本输入元素
+        inputEl.current.focus();
+    };
+    return (
+        <>
+        <input ref={inputEl} type="text" />
+        <button onClick={onButtonClick}>Focus the input</button>
+        </>
+    );
+}
+```
+
+本质上，`useRef` 就像是可以在其 `.current` 属性中保存一个可变值的“盒子”。
+
+你应该熟悉 ref 这一种[访问 DOM](https://zh-hans.reactjs.org/docs/refs-and-the-dom.html) 的主要方式。如果你将 ref 对象以 `<div ref={myRef} />` 形式传入组件，则无论该节点如何改变，React 都会将 ref 对象的 `.current` 属性设置为相应的 DOM 节点。
+
+在类组件我们需要引用  DOM 节点可以使用 `createRef`，`useRef` 与 `createRef` 的用法一致，但 `useRef `  并不局限在引用 DOM 节点上，它可以很方便存放任意值的引用，且**在组件渲染时保持不变**。
+
+> 请记住，当 ref 对象内容发生变化时，`useRef` 并*不会*通知你。变更 `.current` 属性不会引发组件重新渲染。如果想要在 React 绑定或解绑 DOM 节点的 ref 时运行某些代码，则需要使用[回调 ref](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node) 来实现。
+
+> 关于 `useRef` ，可以参考 React 进阶中的 [函数组件 useRef](https://bigricerice.github.io/bigRiceRice.io/dist/2023/01/09/react-hight/#%E5%87%BD%E6%95%B0%E7%BB%84%E4%BB%B6-useref)
+
+
+
+## Hooks FAQ
+
+### **[采纳策略](https://zh-hans.reactjs.org/docs/hooks-faq.html#adoption-strategy)**
+
+- [哪个版本的 React 包含了 Hook？](https://zh-hans.reactjs.org/docs/hooks-faq.html#which-versions-of-react-include-hooks)
+- [我需要重写所有的 class 组件吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#do-i-need-to-rewrite-all-my-class-components)
+- [有什么是 Hook 能做而 class 做不到的？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-with-hooks-that-i-couldnt-with-classes)
+- [我的 React 知识还有多少是仍然有用的？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-much-of-my-react-knowledge-stays-relevant)
+- [我应该使用 Hook，class，还是两者混用？](https://zh-hans.reactjs.org/docs/hooks-faq.html#should-i-use-hooks-classes-or-a-mix-of-both)
+- [Hook 能否覆盖 class 的所有使用场景？](https://zh-hans.reactjs.org/docs/hooks-faq.html#do-hooks-cover-all-use-cases-for-classes)
+- [Hook 会替代 render props 和高阶组件吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#do-hooks-replace-render-props-and-higher-order-components)
+- [Hook 对于 Redux connect() 和 React Router 等流行的 API 来说，意味着什么？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-do-hooks-mean-for-popular-apis-like-redux-connect-and-react-router)
+- [Hook 能和静态类型一起用吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#do-hooks-work-with-static-typing)
+- [如何测试使用了 Hook 的组件？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-test-components-that-use-hooks)
+- [lint 规则具体强制了哪些内容？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-exactly-do-the-lint-rules-enforce)
+
+### **[从 Class 迁移到 Hook](https://zh-hans.reactjs.org/docs/hooks-faq.html#from-classes-to-hooks)**
+
+- [生命周期方法要如何对应到 Hook？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-do-lifecycle-methods-correspond-to-hooks)
+- [我该如何使用 Hook 进行数据获取？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-do-data-fetching-with-hooks)
+- [有类似实例变量的东西吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables)
+- [我应该使用单个还是多个 state 变量？](https://zh-hans.reactjs.org/docs/hooks-faq.html#should-i-use-one-or-many-state-variables)
+- [我可以只在更新时运行 effect 吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-run-an-effect-only-on-updates)
+- [如何获取上一轮的 props 或 state？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-get-the-previous-props-or-state)
+- [为什么我会在我的函数中看到陈旧的 props 和 state ？](https://zh-hans.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function)
+- [我该如何实现 getDerivedStateFromProps？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops)
+- [有类似 forceUpdate 的东西吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-there-something-like-forceupdate)
+- [我可以引用一个函数组件吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-make-a-ref-to-a-function-component)
+- [我该如何测量 DOM 节点？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-can-i-measure-a-dom-node)
+- [const [thing, setThing] = useState() 是什么意思？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-does-const-thing-setthing--usestate-mean)
+
+### **[性能优化](https://zh-hans.reactjs.org/docs/hooks-faq.html#performance-optimizations)**
+
+- [我可以在更新时跳过 effect 吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#can-i-skip-an-effect-on-updates)
+- [在依赖列表中省略函数是否安全？](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies)
+- [如果我的 effect 的依赖频繁变化，我该怎么办？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-can-i-do-if-my-effect-dependencies-change-too-often)
+- [我该如何实现 shouldComponentUpdate？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-do-i-implement-shouldcomponentupdate)
+- [如何记忆计算结果？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-memoize-calculations)
+- [如何惰性创建昂贵的对象？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-create-expensive-objects-lazily)
+- [Hook 会因为在渲染时创建函数而变慢吗？](https://zh-hans.reactjs.org/docs/hooks-faq.html#are-hooks-slow-because-of-creating-functions-in-render)
+- [如何避免向下传递回调？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-avoid-passing-callbacks-down)
+- [如何从 useCallback 读取一个经常变化的值？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-to-read-an-often-changing-value-from-usecallback)
+
+### **[底层原理](https://zh-hans.reactjs.org/docs/hooks-faq.html#under-the-hood)**
+
+- [React 是如何把对 Hook 的调用和组件联系起来的？](https://zh-hans.reactjs.org/docs/hooks-faq.html#how-does-react-associate-hook-calls-with-components)
+- [Hook 使用了哪些现有技术？](https://zh-hans.reactjs.org/docs/hooks-faq.html#what-is-the-prior-art-for-hooks)

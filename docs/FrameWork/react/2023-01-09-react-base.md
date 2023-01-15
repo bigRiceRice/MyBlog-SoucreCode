@@ -3,9 +3,9 @@ title: React - 基础
 author: BigRice
 date: 2023-01-09
 location: 云梦泽
-summary:
+summary: React 入门基础总结
 tags:
-    - React 入门基础总结
+    - React
 ---
 
 ## 创建 React 应用
