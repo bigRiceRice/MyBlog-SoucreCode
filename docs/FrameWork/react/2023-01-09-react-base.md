@@ -5,7 +5,7 @@ date: 2023-01-09
 location: 云梦泽
 summary:
 tags:
-    - React
+    - React 入门基础总结
 ---
 
 ## 创建 React 应用
@@ -27,7 +27,7 @@ tags:
 
 在 JSX 中，在单个花括号 `{}` 中填写 JS 表达式来完成数据的绑定或函数的运算：
 
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032059209.png" alt="code" style="zoom:67%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032059209.png" alt="code" style="zoom: 50%;" />
 
 JSX 也是一个表达式：在编译之后，JSX 表达式会被转为普通 JavaScript 函数调用，并且对其取值后得到 JavaScript 对象。
 
@@ -37,13 +37,13 @@ JSX 也是一个表达式：在编译之后，JSX 表达式会被转为普通 Ja
 
 在 JSX 中，使用 `onXXX` 来绑定事件，例如 `onClick` 用来监听点击事件，并传入需要执行的函数：
 
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032101566.png" alt="code" style="zoom: 67%;" />
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032101566.png" alt="code" style="zoom: 50%;" />
 
 -   ##### JSX 的事件传参只能通过使用箭头函数二次调用待执行函数后传参
 
 -   或调用一个柯里化函数：
 
-      <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032110905.png" alt="code" style="zoom: 67%;" />
+      <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032110905.png" alt="code" style="zoom: 50%;" />
 
 ### 列表渲染
 
@@ -51,11 +51,11 @@ JSX 也是一个表达式：在编译之后，JSX 表达式会被转为普通 Ja
 
 > `key` 属性也是必不可少的！
 
-![code](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032112506.png)
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032112506.png" alt="code" style="zoom:50%;" />
 
 ### 注意
 
-JSX 中有许多规则，比如：
+JSX 中有许多小细节，比如：
 
 -   定义元素的类不再是 `class` 而是 `className`
 -   `<label>` 元素的 `for` 属性变成了 `htmlFor`
@@ -486,7 +486,7 @@ const [state, setState] = useState( new State ); // 🔴
 
 ## Props
 
-在 React 思想中，数据是通过 Props 向下流动的，也叫单向数据流。
+（“*properties*” 的缩写）在 React 思想中，数据是通过 Props 向下流动的，也叫单向数据流。
 
 我们在组件调用时所写的任何赋值操作都会以对象的形式赋值给组件的 Props 供内部调用：
 
@@ -497,253 +497,6 @@ const [state, setState] = useState( new State ); // 🔴
 React 非常灵活，但它也有一个严格的规则，即：
 
 **所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。**
-
-
-
-## Refs
-
-Refs 为 *Reference(引用)*  的缩写，它提供了一种方式，允许我们访问 DOM 节点或在 render 方法中创建的 React 元素。
-
-### 类组件 createRef
-
-类组件的 Refs 是使用 `React.createRef()` 创建的，并通过 `ref` 属性附加到 React 元素。在构造组件时，通常将 Refs 分配给实例属性，以便可以在整个组件中引用它们。
-
-```js
-class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-  }
-  render() {
-    return <div ref={this.myRef} />;
-  }
-}
-```
-
-React 会在组件挂载时给 `current` 属性传入 DOM 元素，并在组件卸载时传入 `null` 值。
-
-`ref` 会在 `componentDidMount` 或 `componentDidUpdate` 生命周期钩子触发前就更新。
-
-#### 访问 Refs
-
-当 ref 被传递给 `render` 中的元素时，对该节点的引用可以在 ref 的 `current` 属性中被访问。
-
-```js
-const node = this.myRef.current;
-```
-
-ref 的值根据节点的类型而有所不同：
-
-- 当 `ref` 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 `ref` 接收底层 DOM 元素作为其 `current` 属性。
-- 当 `ref` 属性用于自定义 class 组件时，`ref` 对象接收组件的挂载实例作为其 `current` 属性。
-- **你不能在函数组件上使用 `ref` 属性**，因为他们没有实例。
-
-以下例子说明了这些差异。
-
-
-
-#### 为 DOM 元素添加 Ref
-
-以下代码使用 `ref` 去存储 DOM 节点的引用：
-
-```jsx
-class CustomTextInput extends React.Component {
-    // 创建一个 ref 来存储 textInput 的 DOM 元素
-    textInput = React.createRef();
-
-    focusTextInput = () => {
-        // 直接使用原生 API 使 text 输入框获得焦点
-        // 注意：我们通过 "current" 来访问 DOM 节点
-        this.textInput.current.focus();
-    }
-
-    render() {
-        // 构造器里创建的 `textInput` 上
-        return (
-            <div>
-                <input
-                    ref={this.textInput} // 告诉 React 我们想把 <input> ref 关联到 textInput
-                    type="text" />
-                <input
-                    type="button"
-                    value="Focus the text input"
-                    onClick={this.focusTextInput}
-                    />
-            </div>
-        );
-    }
-}
-```
-
-#### 为类组件添加 Ref
-
-如果我们想包装上面的 `CustomTextInput`，来模拟它挂载之后立即被点击的操作，我们可以使用 ref 来获取这个自定义的 input 组件并手动调用它的 `focusTextInput` 方法：
-
-```jsx
-class AutoFocusTextInput extends React.Component {
-    textInput = React.createRef();
-    componentDidMount() {
-        this.textInput.current.focusTextInput();
-    }
-
-    render() {
-        return (
-            <CustomTextInput ref={this.textInput} />
-        );
-    }
-}
-```
-
-请注意，这仅在 `CustomTextInput` 声明为 class 时才有效：
-
-```jsx
-class CustomTextInput extends React.Component {
-  // ...
-}
-```
-
-
-
-#### Refs 与函数组件
-
-默认情况下，**你不能在函数组件上使用 `ref` 属性**，因为它们没有实例：
-
-```jsx
-function MyFunctionComponent() {
-    return <input />;
-}
-
-class Parent extends React.Component {
-    constructor(props) {
-        super(props);
-        this.textInput = React.createRef();
-    }
-    render() {
-        // 这将不会工作
-        return (
-            <MyFunctionComponent ref={this.textInput} />
-        );
-    }
-}
-```
-
-如果要在函数组件中使用 `ref`，你可以使用 [forwardRef](https://zh-hans.reactjs.org/docs/forwarding-refs.html)（可与 [`useImperativeHandle`](https://zh-hans.reactjs.org/docs/hooks-reference.html#useimperativehandle) 结合使用），或者可以将该组件转化为 class 组件。
-
-
-
-### 函数组件 useRef
-
-函数组件使用 `useRef` 创建引用，它的用法与 `createRef` 一致：
-
-```jsx
-// 用法与 `createRef` 一致
-const FunctionComponent = props => {
-    const textInput = useRef();
-    function focusTextInput() {
-        textInput.current.focus();
-    }
-    return (
-        <div>
-            <input
-                ref={textInput} // 告诉 React 我们想把 <input> ref 关联到 textInput
-                type="text"
-            />
-            <input type="button" value="Focus the text input" onClick={focusTextInput} />
-        </div>
-    );
-};
-```
-
-
-
-#### 为什么是 useRef ？
-
-我们可能会纳闷，`createRef` 与 `useRef` 用法都一样，那 `useRef` 这个后生的意义何在？其实这个问题的答案在官网上就能找到。
-
-<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301132318159.png" alt="image-20230113231844076" style="zoom: 67%;" />
-
-换句人话说 ,  `useRef` 在 react hook 中的作用正如官网说的，它像一个变量，类似于 this 、 它像一个盒子, 你可以存放任何东西。敲重点，`useRef `  并**不局限在引用 DOM 节点上**！
-
-它与 `createRef` 的本质区别在于：`useRef` 的引用**不会随着组件的更新而更新**
-
-> createRef 每次渲染都会返回一个新的引用，而 useRef 每次都会返回相同的引用，除非显示的修改它的 current。
-
-#### **总结**
-
-- useRef 不仅仅是用来管理 DOM ref 的，它还相当于 this , 可以存放任何变量.  
-- useRef 可以很好的解决闭包带来的不方便性. 你可以在各种库中看到它的身影,   比如 react-use 中的 useInterval , usePrevious …… 
-- 值得注意的是，当 useRef 的内容发生变化时,它不会通知您。更改 .current 属性不会导致重新渲染
-
-
-
-### 通用的 Ref Callback
-
-> Ref Callback 是一种通用的创建引用方式，类组件与函数式组件都可使用
-
-React 支持另一种设置 refs 的方式，称为“回调 refs”。它能助你更精细地控制何时 refs 被设置和解除。
-
-不同于传递 `createRef()` 创建的 `ref` 属性，你会传递一个函数。这个函数中接受 React 组件实例或 HTML DOM 元素作为参数，以使它们能在其他地方被存储和访问。
-
-下面的例子描述了一个通用的范例：使用 `ref` 回调函数，在实例的属性中存储对 DOM 节点的引用。
-
-```jsx
-class CustomTextInput extends React.Component {
-    textInput = null
-    
-    setTextInputRef = element => {
-        this.textInput = element;
-    };
-    
-    focusTextInput = () => {
-        // 使用原生 DOM API 使 text 输入框获得焦点
-        if (this.textInput) this.textInput.focus();
-    };
-    
-    componentDidMount() {
-        // 组件挂载后，让文本框自动获得焦点
-        this.focusTextInput();
-    }
-
-    render() {
-        // 使用 `ref` 的回调函数将 text 输入框 DOM 节点的引用存储到 React
-        return (
-            <div>
-                <input
-                    type="text"
-                    ref={this.setTextInputRef}
-                    />
-                <input
-                    type="button"
-                    value="Focus the text input"
-                    onClick={this.focusTextInput}
-                    />
-            </div>
-        );
-    }
-}
-```
-
-这在组件上也同样适用：
-
-```jsx
-function CustomTextInput(props) {
-    return (
-        <div>
-            <input ref={props.inputRef} />
-        </div>
-    );
-}
-
-class Parent extends React.Component {
-    render() {
-        return (
-            <CustomTextInput
-                inputRef={el => this.inputElement = el}
-            />
-        );
-    }
-}
-```
 
 
 
