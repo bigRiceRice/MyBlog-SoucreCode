@@ -8,7 +8,7 @@ tags:
     - Vite
 ---
 
-## CSS 预处理与模块化配置
+## CSS 预处理 & 模块化配置
 
 ### 前言
 
@@ -282,6 +282,17 @@ document.body.appendChild(l2);
 
 在我们的开发过程中，如果我们想查看某个样式的源文件在哪，是无法直接跳转的，而是会跳转到相应的 style 标签体中，而当我们配置了 devScurcemap 这个配置项后，就可以追踪到源文件的路径了。
 
+```js
+/** @type import("vite").UserConfig */
+export default {
+    css: {
+        devScurcemap: true
+    },
+};
+```
+
+
+
 
 
 ### Postcss 配置项
@@ -364,8 +375,212 @@ body {
 
 
 
+## 静态资源处理 & 路径别名
+
+### 静态资源
+
+Vite 中对任何的静态资源都是**开箱即用**的，无论你引入的是 *png & jpeg & jpg & svg & mp4 & mp3 ...* 内容，Vite 都会默认将它转换为**资源的相对路径**，我们可以尝试引入资源：
+
+> 在开发中，静态资源是狭义的图片、SVG、视频、.ico 等资源，而在服务器上，项目中 99% 的内容都是广义上的静态资源，除了需要动态获取的数据。
+
+假设项目中有一个 src/assets/ 目录，现在它们的内容如下：
+
+```
+src/assets
+├─ images
+│	├─ img1.jpg
+│	└─ shield_icon.svg
+└─ video1.mp4
+```
+
+随后定义一个 JS 文件导入文件后打印输入：
+
+```js
+// @ 开头的目录为路径别名，需要在 viet.config.js 中配置
+import video1 from "@assets/video1.mp4";
+import svg1 from "@images/shield_icon.svg";
+import img1 from "@images/img1.jpg";
+
+console.log("video1", video1); // -> /src/assets/video1.mp4
+console.log("svg1", svg1);// -> /src/assets/images/shield_icon.svg
+console.log("img1", img1);// -> /src/assets/images/img1.jpg
+```
+
+没错，会直接获取到指定文件的相对路径，因为 Vite 自动将资源的内容处理为 JS  脚本，并默认导出相对路径。其实它们的二进制内容已经被替换为 JS 脚本了：
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301271405751.png" alt="image-20230127140522677" style="zoom:67%;" />
+
+所以我们就可以直接将路径用于 img & video 标签的 src 属性上了，这就是对静态资源的开箱即用。
+
+那么其实这里有一个问题，就是导入的 svg 矢量图将如何显示？你可能知道可以直接使用 img 标签来导入 svg 的路径使用，这显然也是可行的：
+
+```js
+import svg1 from "@images/shield_icon.svg";
+const i1 = document.createElement("img");
+i1.src = svg1;
+document.body.appendChild(l1);
+```
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301271412253.png" alt="image-20230127141203191" style="zoom:67%;" />
+
+但这样我们就失去了 svg 图片的一些特性，比如修改颜色等。那么这个时候我们就可以传递一个 `raw` 参数，指定需要的是原始数据而非资源路径。
+
+#### *raw*
+
+我们可以通过在资源路径的最末尾加上 `?raw` 表示需要的是**原始数据**（二进制文本）。
+
+```js
+import svg1 from "@images/shield_icon.svg?raw";
+document.body.innerHTML += svg1;
+```
+
+<img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301271520302.png" alt="image-20230127152044239" style="zoom:67%;" />
+
+与之对应的是 `url` 参数，也就是默认值。
+
+#### *url*
+
+我们可以通过在资源路径的最末尾加上 `?url` 表示需要的是**资源相对路径**。
+
+```js
+import svg1 from "@images/shield_icon.svg?url";
+```
+
+
+
+### 路径别名
+
+ 当我们遇到一个组件定义在很深的目录下，导致引用的层级变得非常烦人，在大型项目中甚至可能遇见 `../../../../src/assets/images/img.jpg` 这样的迷惑路径。
+
+那么**路径别名**可以很好的帮到你，它的功能就像 Moba 游戏中在指定位置中插一个眼，需要过去的时候再 *传送* 过去。
+
+路径别名的定义是这样的：
+
+```js
+const { resolve } = require("path");
+
+/** @type import("vite").UserConfig */
+export default {
+    resolve: { // resolve [解决] 有且只有一个属性，就是 alias
+        alias: {
+            "@src": resolve(__dirname, "../../src"),
+            "@assets": resolve(__dirname, "../assets"),
+            "@images": resolve(__dirname, "../assets/images"),
+        }
+    }
+}
+```
+
+我们需要在 `resolve` 属性下定义一个名为 `alias` 的对象，此对象的 key 是一个唯一的标识符，value 是指定的真实资源路径。
+
+当我们定义好别名对象后，Vite 就会在打包时检查一遍所有资源的导入路径，若发现标识符 key ，则将它替换为 value。
+
+**路径别名对象的定义有几个需要注意的点：**
+
+1. value 路径最好使用 `path` 模块的 `resolve` 方法来拼接，以消除*某些可能存在的 BUG 或不同操作系统下的兼容性*。
+2. value 路径必须采取当前目录于指定目录的相对路径形式，*切勿使用绝对路径*。
+    - 假设我的 vite.config.js 是根据环境的不同来生效的，那么我的真实配置很可能存在于另一个目录下，那么此时 value 的值就需要基于当前处于的目录来配置相对路径。
+
+当我们定义好路径别名后，在项目中就可以像这样使用了：
+
+```js
+import video1 from "@assets/video1.mp4";
+import svg1 from "@images/shield_icon.svg";
+import img1 from "@images/img1.jpg";
+```
+
+如果你打开浏览器查看真实生效的源代码，会发现以上代码会被替换为如下代码：
+
+```js
+import video1 from "/src/assets/video1.mp4";
+import svg1 from "/src/images/shield_icon.svg";
+import img1 from "/src/images/img1.jpg";
+```
+
+
+
+## 关于打包 & 打包配置
+
+### 前言
+
+#### 😮 打包后使用 live serve 插件启动项目报错
+
+当我们执行 `yarn build` 后，会在根目录下生成一个 dist 目录，里面存放的是我们所有代码的压缩文件，以我的 Demo 为例，打包后的文件目录长这样：
+
+![image-20230127231209938](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301272312014.png)
+
+此时直接在 index.html 启用一个 `live serve` 服务器，是无法正常的打开页面的，会提示 `404` 错误，这里的原因很简单，因为 `live serve` 插件默认是启用根据工程目录来启用服务器的，它的本地地址应该是这样的 
+
+```
+http://127.0.0.1:60649/dist/index.html
+```
+
+而我们项目中的资源导入的地址是基于根目录的（即 127.0.0.1），而此时插件的本地服务器根目录是 dist，所以自然而然无法访问到资源，所以报错，解决方法也很简单：新建一个空的文件夹，将 dist 目录下的所有内容全部拷贝进去。再启用 `live serve` 就可以正常打开页面了。
+
+
+
+#### 😮 文件后的哈希乱码有何用处
+
+你也肯定也注意到了，打包后除了 index.html 文件，所有文件的末尾都有一个 `-` 开头的哈希乱码，那么这串哈希乱码有何用处呢？
+
+简单来说，是一个利用哈希乱码的巧妙运用，旨在绕过浏览器引用缓存文件机制，达到更新文件。
+
+- 浏览器文件缓存机制
+    - 浏览器为了减少性能占用，在第一次请求文件完成后，会将此文件丢到缓存去，那么下一次刷新后就可以直接利用缓存中的文件从而减少性能占用了。
+- 哈希乱码生成规则
+    - 哈希乱码的生成根据内容而产生不同的结果，若传入的内容不变，那么生成的结果不变，若内容修改，结果修改。
+
+
+
+### 打包配置
+
+在 Vite 中，底层使用了 *rollup* 第三方包来完成小模块的打包。
+
+> rollup 提供一个充分利用 ESM 各项特性的打包器，可以构建出结构比较扁平，性能比较出众的类库，一个纯粹、高效的代码打包工具
+
+Vite 的打包配置没什么值得说道的地方，所以这里直接上代码：
+
+```js
+/** @type import("vite").UserConfig */
+export default {
+    // 配置生产相关
+    build: {
+        // 自定义打包后存放代码的目录名称，默认值为 dist
+        outDir: "MyOutFolder",
+        // 自定义打包后存放静态资源的目录名称，默认值为 assets
+        assetsDir: "public",
+        // 自定义静态资源中 base64 处理的阈值，默认值为 4kb 以下资源自动转换为 base64 格式
+        assetsInlineLimit: 1024 * 10,
+        // 配置 rullop 打包策略
+        rollupOptions: {
+            // 控制输出
+            output: {
+                // asset 目录的静态资源中文件名称的规则
+                assetFileNames: "[name].[hash].[ext]",
+            },
+        },
+    },
+};
+
+```
+
+
+
+## Plugin 插件
+
+相信有过 Webpack 打包经验的小伙伴们都有使用过插件的经历，因为 Webpack 中可以配置的插件真的太多了。
+
+那么在 Vite 中，可以配置的插件在主观上好像并没有几个，这是为啥嘞？
+
+究其原因，就是 Vite 自动启用了大量的内置插件。
+
+- 比如 webpack-plugin-html 插件，用于生成项目的 index.html 文件，Vite 项目中就会自动出现，无需下载配置。
+- 亦或者像 webpack-plugin-clear 插件，用于清空打包后的 dist 目录，Vite 项目也会自动调用，无需下载配置。
+
+
+
+
+
 ## 参考文章 & 视频
 
 - [Vite世界指南（带你从0到1深入学习 vite）](https://www.bilibili.com/video/BV1GN4y1M7P5/?spm_id_from=333.337.search-card.all.click&vd_source=8d08e7af2575a84783be5a41708ac09e)
-
-- [浏览器、ESM规范、模块化、webpack和vite之间联系？](
