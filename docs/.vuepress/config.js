@@ -30,6 +30,12 @@ module.exports = {
                 path: "/Css/",
                 title: "Css",
             },
+            {
+                id: "vite",
+                dirname: "Vite",
+                path: "/Vite/",
+                title: "Vite",
+            },
         ],
         nav: [
             {
