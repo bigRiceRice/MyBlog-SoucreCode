@@ -3,7 +3,7 @@ title: Vite Configs Demo
 author: bigRice
 date: 2023-01-20
 location: 云梦泽
-summary: 记录了一些 Vite 常用的配置项
+summary: 记录了一些 Vite 常用的配置项代码
 tags:
     - Vite
 ---
@@ -68,13 +68,14 @@ export default defineConfig(() => ({
         assetsDir: "public",
         // 自定义静态资源中 base64 处理的阈值，默认值为 4kb 以下资源自动转换为 base64 格式
         assetsInlineLimit: 1024 * 10,
-        // 配置 rullop 打包策略
+        // 配置 rullup 打包策略
         rollupOptions: {
             // 控制输出
             output: {
                 // asset 目录的静态资源中文件名称的规则
                 assetFileNames: "[name].[hash].[ext]",
             },
+            // ... 其他 rollup 配置
         },
     },
 }));
