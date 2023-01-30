@@ -8,8 +8,6 @@ tags:
     - Vite
 ---
 
-
-
 ## 关于插件 Plugin
 
 > [社区插件大全](https://github.com/vitejs/awesome-vite#plugins)
@@ -119,11 +117,7 @@ src
 -   `vite-plugin-react-` 前缀作为 React 插件
 -   `vite-plugin-svelte-` 前缀作为 Svelte 插件
 
-
-
 ## 插件 API
-
-
 
 ### Vite 钩子
 
@@ -161,15 +155,13 @@ module.export = options => {
 };
 ```
 
-
-
 #### _configResolved_
 
 ```ts
 (config: ResolvedConfig) => void | Promise<void>
 ```
 
-该钩子在解析 Vite 配置后**最后**才调用，它的大致使用方式与 `config` 钩子一致。 
+该钩子在解析 Vite 配置后**最后**才调用，它的大致使用方式与 `config` 钩子一致。
 
 使用这个钩子读取和存储最终解析的配置。当插件需要根据运行的命令做一些不同的事情时，它也很有用。
 
@@ -197,10 +189,6 @@ module.export = options => {
     };
 };
 ```
-
-
-
-
 
 #### _configureServer_
 
@@ -249,9 +237,7 @@ const myPlugin = () => ({
 
 `configureServer` 在打包后将不会被调用，所以其他钩子需要防范它缺失。
 
-
-
-#### *configurePreviewServer*
+#### _configurePreviewServer_
 
 ```ts
 (server: { middlewares: Connect.Server, httpServer: http.Server }) => (() => void) | void | Promise<(() => void) | void>
@@ -262,8 +248,6 @@ const myPlugin = () => ({
 > 预览服务器广义来讲是一个插件，它可以直接**预览打包过后的 index.html 文件**，就像 VS Code 中的 Live Serve 插件一样。
 >
 > 可以通过 `npx vite preview` 开启一个预览服务器。
-
-
 
 #### _transformIndexHtml_
 
@@ -292,9 +276,7 @@ module.export = options => {
 };
 ```
 
-
-
-#### *handleHotUpdate*
+#### _handleHotUpdate_
 
 ```ts
 (ctx: HmrContext) => Array<ModuleNode> | void | Promise<Array<ModuleNode> | void>
@@ -304,22 +286,22 @@ module.export = options => {
 
 ```ts
 interface HmrContext {
-  file: string
-  timestamp: number
-  modules: Array<ModuleNode>
-  read: () => string | Promise<string>
-  server: ViteDevServer
+    file: string;
+    timestamp: number;
+    modules: Array<ModuleNode>;
+    read: () => string | Promise<string>;
+    server: ViteDevServer;
 }
 ```
 
-- `modules` 是受更改文件影响的模块数组。它是一个数组，因为单个文件可能映射到多个服务模块（例如 Vue 单文件组件）。
-- `read` 这是一个异步读函数，它返回文件的内容。之所以这样做，是因为在某些系统上，文件更改的回调函数可能会在编辑器完成文件更新之前过快地触发，并 `fs.readFile` 直接会返回空内容。传入的 `read` 函数规范了这种行为。
+-   `modules` 是受更改文件影响的模块数组。它是一个数组，因为单个文件可能映射到多个服务模块（例如 Vue 单文件组件）。
+-   `read` 这是一个异步读函数，它返回文件的内容。之所以这样做，是因为在某些系统上，文件更改的回调函数可能会在编辑器完成文件更新之前过快地触发，并 `fs.readFile` 直接会返回空内容。传入的 `read` 函数规范了这种行为。
 
 钩子可以选择:
 
-- 过滤和缩小受影响的模块列表，使 HMR 更准确。
+-   过滤和缩小受影响的模块列表，使 HMR 更准确。
 
-- 返回一个空数组，并通过向客户端发送自定义事件来执行完整的自定义 HMR 处理:
+-   返回一个空数组，并通过向客户端发送自定义事件来执行完整的自定义 HMR 处理:
 
     ```js
     handleHotUpdate({ server }) {
@@ -331,14 +313,6 @@ interface HmrContext {
       return []
     }
     ```
-
-    
-
-    
-
-
-
-
 
 ### Rollup 钩子
 
@@ -365,10 +339,6 @@ interface HmrContext {
 > 请注意 [`moduleParsed`](https://rollupjs.org/guide/en/#moduleparsed) 钩子在开发中是 **不会** 被调用的，因为 Vite 为了性能会避免完整的 AST 解析。
 >
 > [Output Generation Hooks](https://rollupjs.org/guide/en/#output-generation-hooks)（除了 `closeBundle`) 在开发中是 **不会** 被调用的。你可以认为 Vite 的开发服务器只调用了 `rollup.rollup()` 而没有调用 `bundle.generate()`。
-
-
-
-
 
 ### 插件顺序 & 情景应用
 
@@ -698,4 +668,4 @@ function createAliasTree(prefix, byPath) {
 }
 ```
 
-## 
+##

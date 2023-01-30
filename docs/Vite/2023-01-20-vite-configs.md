@@ -42,7 +42,7 @@ Vite 对 css 文件的支持是开箱即用的，在 js 文件中直接导入一
 
 #### 模块化支持
 
-假如有很多的模块都需要使用同一个样式文件，项目庞大后，难免会造成样式污染影响到开发，值得庆幸的是，Vite 很好地支持 _CssModule_（Css 模块化）。
+假如有很多的模块都需要使用同一个样式文件，项目庞大后，难免会造成样式污染影响到开发，值得庆幸的是，Vite 中内置了*postcss-modules*（Css 模块化支持）。
 
 在 Vite 项目中若要开启一个 css 文件的模块化，那么它的文件后缀**必须**为 `.module.css` ，这之后就可以在 js 文件中导入使用了。
 
@@ -90,7 +90,7 @@ index.module.css 文件内容：
 
 内部处理的流程大致如下：
 
-1. Vite 读取到 js 脚本中导入了 CssModule 模块化样式表文件
+1. Vite 读取到 js 脚本中导入了 **CssModule** 模块化样式表文件
 2. 使用 fs 模块读取 CssModule 文件内容，并进行一定规则的替换，达到唯一性
     - 比如将 `.footer-box` 替换为 `_footer_box_xxxx_f1`
 3. 同时创建一个类名映射对象，比如 `{footer-box : "_footer_box_xxxx_f1"}`
