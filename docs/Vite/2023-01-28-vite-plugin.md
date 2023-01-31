@@ -1,9 +1,9 @@
 ---
-title: Vite 插件
+title: Vite 插件【常用插件 & 插件原理】
 author: bigRice
 date: 2023-01-29
 location: 云梦泽
-summary: 关于 Vite 中的一些插件 API
+summary: 关于 Vite 中的一些常用插件以及如何手写一个简单的插件
 tags:
     - Vite
 ---

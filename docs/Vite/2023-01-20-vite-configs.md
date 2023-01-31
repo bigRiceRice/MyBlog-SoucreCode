@@ -1,9 +1,9 @@
 ---
-title: Vite 配置项讲解
+title: Vite 进阶【资源处理与 & 打包配置项】
 author: bigRice
 date: 2023-01-20
 location: 云梦泽
-summary: Vite 一些常用的配置项的作用笔记
+summary: 关于 Vite 的静态资源 & Css 处理。
 tags:
     - Vite
 ---

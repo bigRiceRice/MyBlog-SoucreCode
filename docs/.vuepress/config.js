@@ -1,7 +1,12 @@
 module.exports = {
     theme: "@vuepress/theme-blog",
     title: "Big Rice 🍚",
-    base: "/",
+    // base 必须与 github.io 仓库同名 /[Repository-Name]/
+    base: "/blog/",
+    head: [
+        // 设置 favor.ico，.vuepress/public 下
+        ["link", { rel: "icon", href: "favicon.ico" }],
+    ],
     themeConfig: {
         smoothScroll: true,
         dateFormat: "YYYY-MM-DD",
@@ -66,12 +71,4 @@ module.exports = {
             ],
         },
     },
-    plugins: [
-        [
-            "@vuepress/search",
-            {
-                searchMaxSuggestions: 10,
-            },
-        ],
-    ],
 };

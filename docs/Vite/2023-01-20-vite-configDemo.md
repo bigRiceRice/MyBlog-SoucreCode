@@ -1,9 +1,9 @@
 ---
-title: Vite Configs Demo
+title: Vite 常用配置项
 author: bigRice
 date: 2023-01-20
 location: 云梦泽
-summary: 记录了一些 Vite 常用的配置项代码
+summary: 以代码的形式，记录了一些常用的 vite.congig.js 配置项
 tags:
     - Vite
 ---
@@ -121,5 +121,4 @@ export default defineConfig(() => ({
         compressionToGZIP(),
     ],
 }));
-
 ```

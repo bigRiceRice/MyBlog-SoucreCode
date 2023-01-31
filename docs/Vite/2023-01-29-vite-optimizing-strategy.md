@@ -1,9 +1,9 @@
 ---
-title: Vite 优化策略
+title: Vite 常见优化策略
 author: bigRice
 date: 2023-01-29
 location: 云梦泽
-summary: Vite 一些常用优化策略
+summary: 关于 Vite 一些常见的优化策略
 tags:
     - Vite
 ---
@@ -78,28 +78,6 @@ tags:
 5. 构建 & 打包优化：
 
     - 优化体积：TreeShaking 摇树优化、Base64、CDN 加载、分包策略
-
-技术栈
-
--   框架
-    -   Vue 2 & Vue 3
-    -   React
-    -   微信小程序
--   构建工具 & 工具
-    -   Vite：项目构建工具，集成了大量的第三方包与插件
-    -   Webpack：老牌顶流项目构建工具 & 打包工具，社区有大量的第三方包与插件支持
-    -   Rollup：高效、存粹的打包工具
-    -   Babel：JS 代码降级 & 兼容工具
-    -   Postcss：Css 代码降级 & 添加前缀兼容
-    -   VueUse：Vue 3 Hooks 工具库
-    -   MockJS：数据模拟库
--   UI 库
-    -   Vant：移动端 UI
-    -   Element UI & Element Plus
--   规范
-    -   ESM 模块化规范
-    -   CommonJS 模块化规范
-    -   TypeScript：JS 超集，控制类型
 
 ## 分包策略
 
