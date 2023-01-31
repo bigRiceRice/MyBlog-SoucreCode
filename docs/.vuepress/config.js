@@ -1,7 +1,7 @@
 module.exports = {
     theme: "@vuepress/theme-blog",
     title: "Big Rice 🍚",
-    base: "/bigRiceRice.io/dist/",
+    base: "/",
     themeConfig: {
         smoothScroll: true,
         dateFormat: "YYYY-MM-DD",

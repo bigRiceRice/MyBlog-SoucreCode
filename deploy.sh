@@ -6,10 +6,10 @@ set -e
 # 生成打包
 yarn build
 # 删除原先的打包
-rm -rf github.io/dist/*
+rm -rf github.io/*
 
 # 用新的打包文件替换旧的打包文件
-cp -rf docs/.vuepress/dist/*  github.io/dist/
+cp -rf docs/.vuepress/dist/*  github.io/
 
 # 进入笔记本上线的库（gihub page）
 cd github.io
