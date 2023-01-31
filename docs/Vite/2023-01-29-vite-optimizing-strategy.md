@@ -38,12 +38,14 @@ tags:
 
     - 事件监听使用 lodash 防抖节流函数。
 
-    - 某些原生函数考虑使用第三方工具函数，例如数组的原生 forEach 在遇到海量数据时会有性能问题，而 lodash_forEach 就可以在一定程度上解决问题。
+    - 某些原生函数考虑使用第三方工具函数，例如数组的原生 forEach 在遇到海量数据时会有性能问题，而 lodash.forEach 就可以在一定程度上解决性能问题。
+
+    - 动态导入（路由懒加载就是动态导入的一种形式）
 
     - 作用域控制，请看下列代码：
 
         ```js
-        const arr [1,2,3,// 假设有海量数据 ]
+        const arr [1,2,3]
 
         for(let i = 0; i < arr.length; i ++){
             // ...
@@ -55,7 +57,7 @@ tags:
         我们可以改造成如下代码：
 
         ```js
-        const arr [1,2,3,// 假设有海量数据 ]
+        const arr [1,2,3]
 
         for(let i = 0, arrLength = arr.langth; i < arrLength; i ++){
             // ...
@@ -75,7 +77,7 @@ tags:
 
 5. 构建 & 打包优化：
 
-    - 优化体积：TreeShaking 代码压缩、图片压缩、CDN 加载、分包策略
+    - 优化体积：TreeShaking 摇树优化、Base64、CDN 加载、分包策略
 
 技术栈
 
@@ -230,10 +232,10 @@ rollupOptions: {
 
 ![image-20230130214914357](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301302149422.png)
 
-Gzip 的工作流程是这样的，首先假设服务器有一份源文件与一份经过压缩的 `.gz` 文件，随后浏假设览器请求这个文件。
+Gzip 的工作流程是这样的，首先假设服务器有一份源文件与一份经过压缩的 `.gz` 文件，随后假设浏览器请求这个文件。
 
 1. 此时浏览器请求数据头中的 Accept-Encoding 包含 gzip 选项（表示我支持压缩）
-2. 服务器看到请求数据头中的 Accept-Encoding 包含 gzip 选项，则返回经过压缩的那一份文件。
+2. 服务器看到请求数据头中的 Accept-Encoding 包含 gzip 选项，则返回经过压缩的那一份 `.gz` 文件。
 
 这样就减少网络实际传输数据的大小，大大提高了传输效率。
 
@@ -321,3 +323,74 @@ if (u === `/main.js`) {
 ![image-20230130232248760](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301302322832.png)
 
 这样就完成了 Gzip 相关的优化了。
+
+## CDN 加速
+
+### 何为 CDN
+
+> CDN 即 Content Delivery Network — 内容发布网络
+
+我们都知道 JS 库除了可以从 NPM 中下载到本地，还有一种原始的使用方式：通过 Script 标签引入 CDN 直接从目标服务器上获取，两者的效果都是一样的。
+
+所以我们可以在打包后将所有用到第三方包 & 库转为 CDN 加载形式，这可以有效**缓解我们自己服务器的压力**。
+
+-   因为 CDN 加载有个强大之处：根据所在地来分发网络，比如请求来自在广州，那么就会从广州附近的服务器上响应。
+-   说的简单点就是使用高效的服务器获取资源（白嫖）。
+
+### 使用 CDN 加速
+
+在 Vite 中可以通过一个 Vite [插件](https://github.com/MMF-FE/vite-plugin-cdn-import/blob/master/README.zh-CN.md)来完成 CDN 加速：`vite-plugin-cdn-import` 来完成。
+
+下面以打包 lodash 为例，我们使用一个导入了 lodash 的 js 打包代码为例，这是它打包后的大小：
+
+![image-20230131113021587](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301311130644.png)
+
+随后我们尝试使用 CDN 加速优化：
+
+1. 首先下载插件：
+
+    ```shell
+    yarn add vite-plugin-cdn-import -D
+    ```
+
+2. 随后在 vite.config.js 中使用插件：
+
+    ```js
+    import { defineConfig } from "vite";
+    import importToCdn from "vite-plugin-cdn-import";
+
+    let lodashCdnPath = `https://cdn.bootcdn.net/ajax/libs/lodash.js/4.17.21/lodash.core.min.js`;
+    export default defineConfig({
+        build: {
+            minify: false,
+        },
+        plugins: [
+            importToCdn({
+                modules: [
+                    {
+                        // 包名
+                        name: "lodash",
+                        // 打包后的变量名
+                        var: "lodash_CDN",
+                        // CDN 地址
+                        path: lodashCdnPath,
+                    },
+                ],
+            }),
+        ],
+    });
+    ```
+
+3. 查看 CDN 加速后的大小：
+
+    从 214.55kb 缩小至 1.4 kb
+
+    ![image-20230131113950963](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301311139016.png)
+
+4. CDN 加速会将指定所加速到的地址往加载 main.js 顶部通过 Script 的形式加载：
+
+    我们可以启动生成服务器查看项目：`npx vite preview`
+
+    ![image-20230131114233686](https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301311142749.png)
+
+这就是 CDN 加速优化。

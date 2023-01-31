@@ -437,7 +437,7 @@ export default {
     plugin: [
         createHtmlPlugin({
             inject: {
-                // data 内的输入将会被注入到 html 中，html 需要使用 ejs 语法接收
+                // data 内的对象将会被注入到 html 中，html 需要使用 ejs 语法接收
                 data: {
                     title: "Home - 首页",
                     // types.js 是一个高效的字体动画库
