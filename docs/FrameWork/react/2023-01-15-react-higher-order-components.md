@@ -60,7 +60,7 @@ tags:
 >     ```js
 >     import { defineConfig } from "vite";
 >     import react from "@vitejs/plugin-react";
->    
+>
 >     // https://vitejs.dev/config/
 >     export default defineConfig({
 >         plugins: [
@@ -100,17 +100,13 @@ export default withStyles(styles)(withRouter(keepaliveLifeCycle(Index)));
 >
 > ```jsx
 > // withStyles(styles)(withRouter(keepaliveLifeCycle(Index))); 可读性太差
-> 
+>
 > // 以下的 compose 是一段伪代码，它在实际的工具库中可能不是这样的实现
-> function compose(a,b,c){
->     return (component) => a(styles)(b(c(component)))
+> function compose(a, b, c) {
+>     return component => a(styles)(b(c(component)));
 > }
-> const enhance = compose(
->     withStyles,
->     withRouter,
->     keepaliveLifeCycle
-> )
-> const EnhancedComponent = enhance(Index)
+> const enhance = compose(withStyles, withRouter, keepaliveLifeCycle);
+> const EnhancedComponent = enhance(Index);
 > ```
 >
 > 许多第三方库都提供了 `compose` 工具函数，包括 lodash （比如 [`lodash.flowRight`](https://lodash.com/docs/#flowRight)）， [Redux](https://redux.js.org/api/compose) 和 [Ramda](https://ramdajs.com/docs/#compose)。

@@ -5,14 +5,12 @@ date: 2023-01-09
 location: 云梦泽
 summary: Refs、Reder Props、Portals 等进阶总结
 tags:
-  - React
+    - React
 ---
-
-
 
 ## Refs
 
- （“Reference” 的缩写）Refs 提供了一种方式，允许我们访问 DOM 节点或在 render 方法中创建的 React 元素。
+（“Reference” 的缩写）Refs 提供了一种方式，允许我们访问 DOM 节点或在 render 方法中创建的 React 元素。
 
 ### 类组件 createRef
 
@@ -22,13 +20,13 @@ tags:
 
 ```js
 class MyComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.myRef = React.createRef();
-  }
-  render() {
-    return <div ref={this.myRef} />;
-  }
+    constructor(props) {
+        super(props);
+        this.myRef = React.createRef();
+    }
+    render() {
+        return <div ref={this.myRef} />;
+    }
 }
 ```
 
@@ -46,13 +44,11 @@ const node = this.myRef.current;
 
 ref 的值根据节点的类型而有所不同：
 
-- 当 `ref` 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 `ref` 接收底层 DOM 元素作为其 `current` 属性。
-- 当 `ref` 属性用于自定义 class 组件时，`ref` 对象接收组件的挂载实例作为其 `current` 属性。
-- **你不能在函数组件上使用 `ref` 属性**，因为他们没有实例。
+-   当 `ref` 属性用于 HTML 元素时，构造函数中使用 `React.createRef()` 创建的 `ref` 接收底层 DOM 元素作为其 `current` 属性。
+-   当 `ref` 属性用于自定义 class 组件时，`ref` 对象接收组件的挂载实例作为其 `current` 属性。
+-   **你不能在函数组件上使用 `ref` 属性**，因为他们没有实例。
 
 以下例子说明了这些差异。
-
-
 
 #### 为 DOM 元素添加 Ref
 
@@ -67,7 +63,7 @@ class CustomTextInput extends React.Component {
         // 直接使用原生 API 使 text 输入框获得焦点
         // 注意：我们通过 "current" 来访问 DOM 节点
         this.textInput.current.focus();
-    }
+    };
 
     render() {
         // 构造器里创建的 `textInput` 上
@@ -75,12 +71,13 @@ class CustomTextInput extends React.Component {
             <div>
                 <input
                     ref={this.textInput} // 告诉 React 我们想把 <input> ref 关联到 textInput
-                    type="text" />
+                    type="text"
+                />
                 <input
                     type="button"
                     value="Focus the text input"
                     onClick={this.focusTextInput}
-                    />
+                />
             </div>
         );
     }
@@ -99,9 +96,7 @@ class AutoFocusTextInput extends React.Component {
     }
 
     render() {
-        return (
-            <CustomTextInput ref={this.textInput} />
-        );
+        return <CustomTextInput ref={this.textInput} />;
     }
 }
 ```
@@ -110,11 +105,9 @@ class AutoFocusTextInput extends React.Component {
 
 ```jsx
 class CustomTextInput extends React.Component {
-  // ...
+    // ...
 }
 ```
-
-
 
 #### Refs 与函数组件
 
@@ -132,16 +125,12 @@ class Parent extends React.Component {
     }
     render() {
         // 这将不会工作
-        return (
-            <MyFunctionComponent ref={this.textInput} />
-        );
+        return <MyFunctionComponent ref={this.textInput} />;
     }
 }
 ```
 
 如果要在函数组件中使用 `ref`，你可以使用 [forwardRef](https://zh-hans.reactjs.org/docs/forwarding-refs.html)（可与 [`useImperativeHandle`](https://zh-hans.reactjs.org/docs/hooks-reference.html#useimperativehandle) 结合使用），或者可以将该组件转化为 class 组件。
-
-
 
 ### 函数组件 useRef
 
@@ -166,32 +155,28 @@ const FunctionComponent = props => {
 };
 ```
 
-
-
 #### 为什么是 useRef ？
 
 我们可能会纳闷，`createRef` 与 `useRef` 用法都一样，那 `useRef` 这个后生的意义何在？其实这个问题的答案在官网上就能找到。
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301132318159.png" alt="image-20230113231844076" style="zoom: 67%;" />
 
-> *然而，`useRef()` 比 `ref` 属性更有用。它可以[很方便地保存任何可变值](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables)，其类似于在 class 中使用实例字段的方式。*
+> _然而，`useRef()` 比 `ref` 属性更有用。它可以[很方便地保存任何可变值](https://zh-hans.reactjs.org/docs/hooks-faq.html#is-there-something-like-instance-variables)，其类似于在 class 中使用实例字段的方式。_
 
-> *而 `useRef()` 和自建一个 `{current: ...}` 对象的唯一区别是，`useRef` 会在每次渲染时返回同一个 ref 对象。*
+> _而 `useRef()` 和自建一个 `{current: ...}` 对象的唯一区别是，`useRef` 会在每次渲染时返回同一个 ref 对象。_
 
-敲重点，`useRef `  并不局限在引用 DOM 节点上，它可以很方便存放任意值的引用，且**在组件渲染时保持不变**。
+敲重点，`useRef ` 并不局限在引用 DOM 节点上，它可以很方便存放任意值的引用，且**在组件渲染时保持不变**。
 
 所以它与 `createRef` 的本质区别在于：
 
-- `useRef` 创建的引用**不会随着组件的更新而更新**，除非显示的修改它的 `current`。
-- `createRef` 创建的引用会随着组件的更新而重新获取
+-   `useRef` 创建的引用**不会随着组件的更新而更新**，除非显示的修改它的 `current`。
+-   `createRef` 创建的引用会随着组件的更新而重新获取
 
 #### **总结**
 
-- useRef 不仅仅是用来管理 DOM ref 的，它还相当于 this , 可以存放任何变量.  
-- useRef 可以很好的解决闭包带来的不方便性. 你可以在各种库中看到它的身影,   比如 react-use 中的 useInterval , usePrevious …… 
-- 值得注意的是，当 useRef 的内容发生变化时,它不会通知您。更改 .current 属性不会导致重新渲染
-
-
+-   useRef 不仅仅是用来管理 DOM ref 的，它还相当于 this , 可以存放任何变量.
+-   useRef 可以很好的解决闭包带来的不方便性. 你可以在各种库中看到它的身影, 比如 react-use 中的 useInterval , usePrevious ……
+-   值得注意的是，当 useRef 的内容发生变化时,它不会通知您。更改 .current 属性不会导致重新渲染
 
 ### 通用的 Ref Callback
 
@@ -205,17 +190,17 @@ React 支持另一种设置 refs 的方式，称为“回调 refs”。它能助
 
 ```jsx
 class CustomTextInput extends React.Component {
-    textInput = null
-    
+    textInput = null;
+
     setTextInputRef = element => {
         this.textInput = element;
     };
-    
+
     focusTextInput = () => {
         // 使用原生 DOM API 使 text 输入框获得焦点
         if (this.textInput) this.textInput.focus();
     };
-    
+
     componentDidMount() {
         // 组件挂载后，让文本框自动获得焦点
         this.focusTextInput();
@@ -225,15 +210,12 @@ class CustomTextInput extends React.Component {
         // 使用 `ref` 的回调函数将 text 输入框 DOM 节点的引用存储到 React
         return (
             <div>
-                <input
-                    type="text"
-                    ref={this.setTextInputRef}
-                    />
+                <input type="text" ref={this.setTextInputRef} />
                 <input
                     type="button"
                     value="Focus the text input"
                     onClick={this.focusTextInput}
-                    />
+                />
             </div>
         );
     }
@@ -253,16 +235,10 @@ function CustomTextInput(props) {
 
 class Parent extends React.Component {
     render() {
-        return (
-            <CustomTextInput
-                inputRef={el => this.inputElement = el}
-            />
-        );
+        return <CustomTextInput inputRef={el => (this.inputElement = el)} />;
     }
 }
 ```
-
-
 
 ## Reder Props
 
@@ -280,12 +256,10 @@ class Parent extends React.Component {
 function DataProvider({render}){
     return {render('World')}
 }
-<DataProvider 
+<DataProvider
     render={data => (<h1>Hello {data.target}</h1>)}
 />
 ```
-
-
 
 ### 使用 Render Props 解决“横切关注点”问题
 
@@ -311,7 +285,9 @@ function Mouse(props) {
     return (
         <div style={{ height: "100vh" }} onMouseMove={handleMouse}>
             <h1>移动鼠标!</h1>
-            <p>当前的鼠标位置是 ({state.x}, {state.y})</p>
+            <p>
+                当前的鼠标位置是 ({state.x}, {state.y})
+            </p>
         </div>
     );
 }
@@ -336,9 +312,10 @@ function Mouse(props) {
     }
     return (
         <div style={{ height: "100vh" }} onMouseMove={handleMouse}>
-
             {/* ...但我们如何渲染 <p> 以外的东西? */}
-            <p>当前的鼠标位置是 ({state.x}, {state.y})</p>
+            <p>
+                当前的鼠标位置是 ({state.x}, {state.y})
+            </p>
         </div>
     );
 }
@@ -374,7 +351,7 @@ function Cat({ mouse }) {
     );
 }
 
-function MouseWithCat (props) {
+function MouseWithCat(props) {
     const [state, setState] = useState({ x: 0, y: 0 });
     function handleMouse(event) {
         setState(
@@ -407,7 +384,7 @@ function App() {
 
 这也是 render prop 的来历：
 
-- 相比于直接将 `<Cat>` 写死在 `<Mouse>` 组件中，并且有效地更改渲染的结果，我们可以为 `<Mouse>` 提供一个函数 prop 来动态的确定要渲染什么 —— 一个 **render prop**。
+-   相比于直接将 `<Cat>` 写死在 `<Mouse>` 组件中，并且有效地更改渲染的结果，我们可以为 `<Mouse>` 提供一个函数 prop 来动态的确定要渲染什么 —— 一个 **render prop**。
 
 ```jsx
 function Mouse(props) {
@@ -445,31 +422,25 @@ function App() {
 
 这项技术使我们共享行为非常容易。要获得这个行为，只要渲染一个带有 `render prop ` 的 `<Mouse>` 组件就能够告诉它当前鼠标坐标 (x, y) 要渲染什么。
 
-> 关于 render prop 一个有趣的事情是你可以使用带有 render prop 的常规组件来实现大多数[高阶组件](https://zh-hans.reactjs.org/docs/higher-order-components.html) (HOC)。 例如，如果你更喜欢使用 `withMouse` HOC而不是 `<Mouse>` 组件，你可以使用带有 render prop 的常规 `<Mouse>` 轻松创建一个：
+> 关于 render prop 一个有趣的事情是你可以使用带有 render prop 的常规组件来实现大多数[高阶组件](https://zh-hans.reactjs.org/docs/higher-order-components.html) (HOC)。 例如，如果你更喜欢使用 `withMouse` HOC 而不是 `<Mouse>` 组件，你可以使用带有 render prop 的常规 `<Mouse>` 轻松创建一个：
 >
 > ```jsx
 > // 如果你出于某种原因真的想要 HOC，那么你可以轻松实现
 > // 使用具有 render prop 的普通组件创建一个！
 > function withMouse(Component) {
->   return class extends React.Component {
->     render() {
->       return (
->         <Mouse render={mouse => (
->           <Component {...this.props} mouse={mouse} />
->         )}/>
->       );
->     }
->   }
+>     return class extends React.Component {
+>         render() {
+>             return <Mouse render={mouse => <Component {...this.props} mouse={mouse} />} />;
+>         }
+>     };
 > }
 > ```
 
 因此，你可以将任一模式与 render prop 一起使用。
 
-
-
 ### 更多
 
-记住，render prop 只是**因为模式**才被称为 *render* prop ，**不代表一定要**用名为 `render` 的 prop 才能被称之为 `render prop`。
+记住，render prop 只是**因为模式**才被称为 _render_ prop ，**不代表一定要**用名为 `render` 的 prop 才能被称之为 `render prop`。
 
 事实上，**任何**被用于告知组件需要渲染什么内容的函数 prop 在技术上都可以被称为 “render prop”
 
@@ -489,20 +460,18 @@ function Mouse({A}){
 我们也可以简单地使用 `children` 插槽来实现，在根本上他们起到的作用是一致的！
 
 ```jsx
-function Mouse({children}){
-    return {children}
+function Mouse({ children }) {
+    return { children };
 }
 
 <Mouse>
-  {mouse => (
-    <p>鼠标的位置是 {mouse.x}，{mouse.y}</p>
-  )}
-</Mouse>
+    {mouse => (
+        <p>
+            鼠标的位置是 {mouse.x}，{mouse.y}
+        </p>
+    )}
+</Mouse>;
 ```
-
-
-
-
 
 ## Portals
 
@@ -510,22 +479,20 @@ Portal 提供了一种将子节点渲染到存在于父组件以外的 DOM 节�
 
 ```js
 import { createPortal } from "react-dom";
-createPortal(child, container)
+createPortal(child, container);
 ```
 
-- `child`：是任何[可渲染的 React 子元素](https://zh-hans.reactjs.org/docs/react-component.html#render)，例如一个元素，字符串或 fragment。
+-   `child`：是任何[可渲染的 React 子元素](https://zh-hans.reactjs.org/docs/react-component.html#render)，例如一个元素，字符串或 fragment。
 
-- `container`：是一个 DOM 元素。
+-   `container`：是一个 DOM 元素。
 
 一个 Portal 的典型用例是当父组件有 `overflow: hidden` 或 `z-index` 样式时，但你需要子组件能够在视觉上“跳出”其容器。例如，对话框、悬浮卡以及提示框。
-
-
 
 ### 注意
 
 虽然 `createPortal` 可以将组件放置到任意 DOM 节点下，但是它 React 树中仍是一个子节点。
 
-由于 portal 仍存在于 *React 树*， 且与 *DOM 树* 中的位置无关，那么无论其子节点是否是 portal，像 context 这样的功能特性都是不变的。
+由于 portal 仍存在于 _React 树_， 且与 _DOM 树_ 中的位置无关，那么无论其子节点是否是 portal，像 context 这样的功能特性都是不变的。
 
 > 总而言之，虽然在 DOM 树上看 portal 定义的组件与父节点不在同一个位置，但在行为上它仍会跟子节点的行为一致，比如 context、事件冒泡等
 

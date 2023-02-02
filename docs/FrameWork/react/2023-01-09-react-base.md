@@ -105,23 +105,23 @@ JSX 中有许多小细节，比如：
 
 函数式组件
 
-- 根基是 FP(函数式编程)，与数学中的函数思想类似，所以假定输入和输出存在某种关联的话，那么相同输入必定会有**相同的输出（状态同步问题）**
+-   根基是 FP(函数式编程)，与数学中的函数思想类似，所以假定输入和输出存在某种关联的话，那么相同输入必定会有**相同的输出（状态同步问题）**
 
-- 代码风格依赖 *Hook*
-- 无法实现继承
-- Hook 完成代码复用方便
-- `this` 为 `undefinde`
+-   代码风格依赖 _Hook_
+-   无法实现继承
+-   Hook 完成代码复用方便
+-   `this` 为 `undefinde`
 
 类组件
 
-- 根基是 OOP(面向对象编程)，所以它会有继承，有内部状态管理等
-- 代码风格依赖配置项
-- 可以实现继承
-- HOC 高阶组件完成代码复用很麻烦
+-   根基是 OOP(面向对象编程)，所以它会有继承，有内部状态管理等
+-   代码风格依赖配置项
+-   可以实现继承
+-   HOC 高阶组件完成代码复用很麻烦
 
 > 相对于类组件，函数组件更加的纯粹，简单，更利于测试，这是本质上的区别
 
-#### 相同 
+#### 相同
 
 组件是 React 可复用的最小代码片段，它们会返回要在页面中渲染 React 元素。
 
@@ -135,7 +135,7 @@ JSX 中有许多小细节，比如：
 
 下面有一个例子：
 
->  函数式组件与类组件在点击按钮的两秒后显示当前的 Prop 值
+> 函数式组件与类组件在点击按钮的两秒后显示当前的 Prop 值
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131641171.png" alt="code" style="zoom: 50%;" />
 
@@ -153,19 +153,19 @@ JSX 中有许多小细节，比如：
 2. 在两秒中内切换 `select` 框中的值
 3. 查看弹出信息
 
-- 下面是点击类查询的结果：
+-   下面是点击类查询的结果：
 
-    <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131702115.gif" alt="demo" style="zoom: 67%;" />
+      <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131702115.gif" alt="demo" style="zoom: 67%;" />
 
-- 下面是点击函数查询的结果：
+-   下面是点击函数查询的结果：
 
-    <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131705340.gif" alt="demo" style="zoom:67%;" />
+      <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301131705340.gif" alt="demo" style="zoom:67%;" />
 
 通过上述操作，函数式组件中弹出的值都是点击按钮那一刻的值（印证了相同输入必定会有**相同的输出**），而类组件可以保持输入最新的值。
 
 原因如下：
 
-当我们更新状态的时候, React 会重新渲染组件, 每一次渲染都会拿到独立的 `user` 状态,  并重新渲染一个  `handleClick`  函数.  每一个 `handleAlertClick` 里面都有它自己的 `user` 。这就是为什么函数组件会出现这种情况。
+当我们更新状态的时候, React 会重新渲染组件, 每一次渲染都会拿到独立的 `user` 状态, 并重新渲染一个 `handleClick` 函数. 每一个 `handleAlertClick` 里面都有它自己的 `user` 。这就是为什么函数组件会出现这种情况。
 
 但是在类组件中， `this` 是一直在改变的，所以类组件中的方法点击时可以获取到最新的实例（即 `this`）进而显示出最新的值了。
 
@@ -189,15 +189,13 @@ JSX 中有许多小细节，比如：
 
 ### Context 传参
 
-更多时候，通过 `<Son />`  这个中间组件将参数传递到最底部的组件这种方式太过繁琐（可能中间组件并不需要 props）这个时候我们可以使用 `context API` 来解决这个问题。
+更多时候，通过 `<Son />` 这个中间组件将参数传递到最底部的组件这种方式太过繁琐（可能中间组件并不需要 props）这个时候我们可以使用 `context API` 来解决这个问题。
 
 #### API
 
 React 提供了一套 `Context API` 一种在组件之间共享值的方式，不必显式地通过组件树的逐层传递 props。
 
-
-
-##### [*React.createContext*](https://react.docschina.org/docs/context.html#reactcreatecontext)
+##### [_React.createContext_](https://react.docschina.org/docs/context.html#reactcreatecontext)
 
 ```js
 const MyContext = React.createContext(defaultValue);
@@ -211,21 +209,17 @@ const MyContext = React.createContext(defaultValue);
 
 > 注意：将 `undefined` 传递给 Provider 的 value 时，消费组件的 `defaultValue` 不会生效。
 
-
-
-##### [*Context.Provider*](https://react.docschina.org/docs/context.html#contextprovider)
+##### [_Context.Provider_](https://react.docschina.org/docs/context.html#contextprovider)
 
 ```jsx
 <MyContext.Provider value={/* 某个值 */}>
 ```
 
-每个 `React.createContext` 创建出来的 *Context* 对象都会返回一个 *Context.Provider* 组件，它将作为数据提供组件。
+每个 `React.createContext` 创建出来的 _Context_ 对象都会返回一个 _Context.Provider_ 组件，它将作为数据提供组件。
 
 Provider 接收一个 `value` 属性，传递给消费组件。一个 Provider 可以和多个消费组件有对应关系。多个 Provider 也可以嵌套使用，里层的会覆盖外层的数据。
 
-
-
-##### [*Context.Consumer*](https://react.docschina.org/docs/context.html#contextconsumer)
+##### [_Context.Consumer_](https://react.docschina.org/docs/context.html#contextconsumer)
 
 ```jsx
 <MyContext.Consumer>
@@ -239,21 +233,19 @@ Consumer 消费者组件可以使函数组件获取到 Context 上下文提供�
 
 函数的 `value` 将为最近的 Provider 提供的 `value` （因为可能有嵌套可能）。如果没有 Provider，`value` 等同于传递给 `createContext()` 的 `defaultValue`。
 
-> 在函数式组件中更加推荐使用 `useContext hook`  来获取 Context 上下文对象
+> 在函数式组件中更加推荐使用 `useContext hook` 来获取 Context 上下文对象
 
-
-
-##### [*Class.contextType*](https://react.docschina.org/docs/context.html#classcontexttype)
+##### [_Class.contextType_](https://react.docschina.org/docs/context.html#classcontexttype)
 
 ContextType 可以使类组件获取到 Context 上下文提供的数据。
 
 ```js
 class MyClass extends React.Component {
     state = {
-		context : null
-    }
+        context: null,
+    };
     componentDidMount() {
-        this.setState({ coutext : this.context })
+        this.setState({ coutext: this.context });
         /* 在组件挂载完成后，使用 MyContext 组件的值来执行一些有副作用的操作 */
     }
 }
@@ -262,21 +254,19 @@ MyClass.contextType = MyContext;
 
 当将类组件的 `contextType` 赋值为 `Context` 上下文对象后，就可以在类组件中访问 `this.context` 了。
 
-> 也可以使用  [public class fields 语法](https://babeljs.io/docs/plugins/transform-class-properties/) 赋值 `contextType`
+> 也可以使用 [public class fields 语法](https://babeljs.io/docs/plugins/transform-class-properties/) 赋值 `contextType`
 >
 > ```jsx
 > class MyClass extends React.Component {
->   static contextType = MyContext;
->   render() {
->     let value = this.context;
->     /* 基于这个值进行渲染工作 */
->   }
+>     static contextType = MyContext;
+>     render() {
+>         let value = this.context;
+>         /* 基于这个值进行渲染工作 */
+>     }
 > }
 > ```
 
-
-
-##### [*Context.displayName*](https://react.docschina.org/docs/context.html#contextdisplayname)
+##### [_Context.displayName_](https://react.docschina.org/docs/context.html#contextdisplayname)
 
 context 对象接受一个名为 `displayName` 的 property，类型为字符串。React DevTools 使用该字符串来确定 context 要显示的内容。
 
@@ -289,8 +279,6 @@ MyContext.displayName = 'MyDisplayName';
 <MyContext.Provider> // "MyDisplayName.Provider" 在 DevTools 中
 <MyContext.Consumer> // "MyDisplayName.Consumer" 在 DevTools 中
 ```
-
-
 
 #### 使用
 
@@ -318,7 +306,7 @@ MyContext.displayName = 'MyDisplayName';
 
 ### Class State
 
-类组件可直接初始化 `state`，或在 `constructor` 中初始化 `state` 
+类组件可直接初始化 `state`，或在 `constructor` 中初始化 `state`
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032140241.png" alt="code" style="zoom: 50%;" />
 
@@ -326,21 +314,21 @@ MyContext.displayName = 'MyDisplayName';
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032144928.png" alt="code" style="zoom: 50%;" />
 
-#### 关于 *setState*
+#### 关于 _setState_
 
 语法：
 
 ```js
-setState(updater, [callback])
+setState(updater, [callback]);
 
-updater = callback((lastState, props) => state | state)
+updater = callback((lastState, props) => state | state);
 ```
 
-- `updater` ：**必需**
-    - 可以传入一个新的 `state` 对象**合并**旧的 state 对象，若旧的不存在，则创建。
-    - 可以传入一个回调函数，此回调函数的参数是将为最新的 state 和最新的 props，**必须**返回一个新的 state
-- `endCallback`：可选，将在 `setState` 完成合并并重新渲染组件后执行。
-    - 通常，建议使用 `componentDidUpdate()` 来代替此方式。
+-   `updater` ：**必需**
+    -   可以传入一个新的 `state` 对象**合并**旧的 state 对象，若旧的不存在，则创建。
+    -   可以传入一个回调函数，此回调函数的参数是将为最新的 state 和最新的 props，**必须**返回一个新的 state
+-   `endCallback`：可选，将在 `setState` 完成合并并重新渲染组件后执行。
+    -   通常，建议使用 `componentDidUpdate()` 来代替此方式。
 
 `setState()` 将对组件 state 的更改排入队列，并通知 React 需要使用更新后的 state 重新渲染此组件及其子组件。这是用于更新用户界面以响应事件处理器和处理服务器数据的主要方式。
 
@@ -348,9 +336,7 @@ updater = callback((lastState, props) => state | state)
 
 `setState()` 并不总是立即更新组件。它会批量推迟更新。这使得在调用 `setState()` 后立即读取 `this.state` 成为了隐患。、
 
-为了消除隐患，请使用 `componentDidUpdate` 或者 `setState` 的回调函数（`setState(updater, callback)`），这两种方式都可以保证在应用更新后触发。如需基于之前的 state 来设置当前的 state，可以为 `updater`  传入一个回调函数。
-
-
+为了消除隐患，请使用 `componentDidUpdate` 或者 `setState` 的回调函数（`setState(updater, callback)`），这两种方式都可以保证在应用更新后触发。如需基于之前的 state 来设置当前的 state，可以为 `updater` 传入一个回调函数。
 
 #### 正确地使用 State
 
@@ -396,21 +382,19 @@ updater = callback((lastState, props) => state | state)
 
 这里的合并是浅合并，所以 `this.setState({comments})` 完整保留了 `this.state.posts`， 但是完全替换了 `this.state.comments`。
 
-> 值得注意的是函数组件中的 useState 将是**替换**操作，而不是合并 
-
-
+> 值得注意的是函数组件中的 useState 将是**替换**操作，而不是合并
 
 ### Function State
 
-函数组件定义 `state` 只能通过 `useState` *Hook* 来实现，语法如下：
+函数组件定义 `state` 只能通过 `useState` _Hook_ 来实现，语法如下：
 
 ```js
 const [state, setState] = useState(initialState);
 ```
 
-- `initialState`：**必需**，设置初始值
-- `state`：初始值的状态引用
-- `setState`：更新状态的函数
+-   `initialState`：**必需**，设置初始值
+-   `state`：初始值的状态引用
+-   `setState`：更新状态的函数
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032142128.png" alt="code" style="zoom: 50%;" />
 
@@ -420,20 +404,20 @@ const [state, setState] = useState(initialState);
 
 <img src="https://sbr-1314368469.cos.ap-guangzhou.myqcloud.com/Images/202301032143017.png" alt="code" style="zoom:50%;" />
 
-#### 关于 *setState*
+#### 关于 _setState_
 
 语法：
 
 ```js
-setState(updater)
-updater = callback(lastState => state | state )
+setState(updater);
+updater = callback(lastState => state | state);
 ```
 
 如果新的 state 需要通过使用先前的 state 计算得出，那么可以将函数传递给 `setState`。该函数将接收先前的 state，并返回一个更新后的值。
 
-> 🔴注意：
+> 🔴 注意：
 >
-> 与类组件中的 `setState` 方法不同，`useState` *Hook* 的 `setState` 的行为将是直接替换原状态，且**在新旧状态引用地址不变的情况下**，将不会触发模板更新！！
+> 与类组件中的 `setState` 方法不同，`useState` _Hook_ 的 `setState` 的行为将是直接替换原状态，且**在新旧状态引用地址不变的情况下**，将不会触发模板更新！！
 >
 > 你可以用函数式的 `setState` 结合展开运算符来达到合并更新对象的效果。
 >
@@ -441,52 +425,52 @@ updater = callback(lastState => state | state )
 > const [state, setState] = useState({});
 > setState(prevState => {
 >     // 也可以使用 Object.assign
-> 	// 必须更新原状态的引用地址，不然将不会触发模板更新！！！
->     return {...prevState, ...updatedValues};
+>     // 必须更新原状态的引用地址，不然将不会触发模板更新！！！
+>     return { ...prevState, ...updatedValues };
 > });
 > ```
 
+#### 关于 _initialState_
 
-
-#### 关于 *initialState*
-
-*initialState* 用于初始化一个 state 状态，但一定不要写成这样的形式：
+_initialState_ 用于初始化一个 state 状态，但一定不要写成这样的形式：
 
 ```js
 // 假设我们的 state 需要经过大量的计算
-function clacState (){
+function clacState() {
     return 1 + 2 + 10086;
 }
-const [state, setState] = useState( clacState() ); // 🔴
+const [state, setState] = useState(clacState()); // 🔴
 
 class State {
-    data:{/*...*/}
+    data: {
+        /*...*/
+    };
 }
-const [state, setState] = useState( new State() ); // 🔴
+const [state, setState] = useState(new State()); // 🔴
 ```
 
-不要直接在 *initialState* 中直接调用函数或调用一个类的初始化函数，这将影响性能且可能会造成为止的 BUG，因为每次组件重新渲染都会重新调用。
+不要直接在 _initialState_ 中直接调用函数或调用一个类的初始化函数，这将影响性能且可能会造成为止的 BUG，因为每次组件重新渲染都会重新调用。
 
-而且 *initialState* 是可以惰性初始化的。上述代码应该修改成如下：
+而且 _initialState_ 是可以惰性初始化的。上述代码应该修改成如下：
 
 ```js
 // 假设我们的 state 需要经过大量的计算
-function clacState (){
+function clacState() {
     return 1 + 2 + 10086;
 }
-const [state, setState] = useState( clacState ); // 🟢
+const [state, setState] = useState(clacState); // 🟢
 
 class State {
-    data:{/*...*/}
+    data: {
+        /*...*/
+    };
 }
-const [state, setState] = useState( new State ); // 🔴
+const [state, setState] = useState(new State()); // 🔴
 ```
-
-
 
 ## Props
 
-（“*properties*” 的缩写）在 React 思想中，数据是通过 Props 向下流动的，也叫单向数据流。
+（“_properties_” 的缩写）在 React 思想中，数据是通过 Props 向下流动的，也叫单向数据流。
 
 我们在组件调用时所写的任何赋值操作都会以对象的形式赋值给组件的 Props 供内部调用：
 
@@ -497,10 +481,6 @@ const [state, setState] = useState( new State ); // 🔴
 React 非常灵活，但它也有一个严格的规则，即：
 
 **所有 React 组件都必须像纯函数一样保护它们的 props 不被更改。**
-
-
-
-
 
 ## 插槽
 
@@ -557,10 +537,4 @@ function App(props){
 
 -   它们都接受一个 `value` 属性，你可以使用它来实现受控组件。
 
-
-
-
-
-
-
-​	
+​

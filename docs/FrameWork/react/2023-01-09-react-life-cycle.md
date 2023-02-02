@@ -46,6 +46,7 @@ tags:
 -   🟠 `render` 函数调用后不会立即执行更新 DOM 和 Refs，它只是决定了应该渲染的内容。
 
     -   在它之后还会经过一个 `getSnapshotBeforeUpdata` 与钩子。
+
 -   每次调用 `setState` 时都会再次触发 `render` 渲染函数。
 -   `render` 应该是个纯函数。这意味着在不修改组件 state 的情况下，每次调用时都返回相同的结果，并且它不会直接与浏览器交互。
 -   **一定不要在** `render` 中调用 `setState` ，这将会造成**死循环**！！！
